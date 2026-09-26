@@ -1,0 +1,39 @@
+{
+    "Python Developer": [
+        "python",
+        "sql",
+        "oops",
+        "git",
+        "django",
+        "rest api"
+    ],
+    "Data Analyst": [
+        "python",
+        "sql",
+        "excel",
+        "statistics",
+        "power bi"
+    ],
+    "ML Engineer": [
+        "python",
+        "machine learning",
+        "numpy",
+        "pandas",
+        "deep learning",
+        "tensorflow"
+    ],
+    "QA Engineer": [
+        "python",
+        "testing",
+        "selenium",
+        "sql",
+        "git"
+    ],
+    "Web Developer": [
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "git"
+    ]
+}
