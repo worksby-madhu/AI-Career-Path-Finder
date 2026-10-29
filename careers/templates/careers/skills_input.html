@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Career Path Finder</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #222;
+            background: #f7f9fc;
+        }
+
+        h1 { color: #244a8f; }
+
+        .field { margin: 18px 0; }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        #suggestions {
+            margin-top: 4px;
+            background: white;
+        }
+
+        .suggestion {
+            display: block;
+            width: 100%;
+            padding: 9px;
+            text-align: left;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .suggestion:hover { background: #eaf1ff; }
+
+        #selected-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .skill-tag {
+            background: #e1ebff;
+            padding: 7px 10px;
+            border-radius: 16px;
+        }
+
+        .remove-skill {
+            margin-left: 6px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 15px;
+            background: #2454a6;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover { background: #173d80; }
+    </style>
+</head>
+
+<body>
+    
+    <h1>AI Career Path Finder</h1>
+    <p>Enter your profile to discover suitable careers and skill gaps.</p>
+
+    <form method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+
+        <div class="field">
+            <label for="education">Education</label>
+            <input id="education" name="education"
+                   placeholder="e.g. B.Tech in AIML" required>
+        </div>
+
+        <div class="field">
+            <label for="experience">Experience (years)</label>
+            <input id="experience" name="experience"
+                   type="number" min="0" max="60" value="0" required>
+        </div>
+
+        <div class="field">
+            <label for="skill-input">Search or enter a skill</label>
+            <input id="skill-input" type="text"
+                   placeholder="Type Python, SQL, React..."
+                   autocomplete="off">
+
+            <div id="suggestions"></div>
+            <div id="selected-skills"></div>
+
+            <button type="button" id="add-custom">
+                Add custom skill
+            </button>
+
+            <input type="hidden" id="skills-value" name="skills"
+                   value="[]">
+        </div>
+
+        <div class="field">
+            <label for="interests">Career interests</label>
+            <textarea id="interests" name="interests" rows="2"
+                      placeholder="e.g. Python development, web development, AI"></textarea>
+        </div>
+
+        <div class="field">
+            <label for="target-career">Target career (optional)</label>
+            <input id="target-career" name="target_career"
+                   placeholder="e.g. Python Developer">
+            <small>Leave blank to see profile-based recommendations only.</small>
+        </div>
+
+        <button class="submit-btn" type="submit">
+            Find My Career
+        </button>
+    </form>
+
+    <script>
+        const skillCatalog = [
+            "Python", "Java", "C", "C++", "JavaScript", "TypeScript",
+            "HTML", "CSS", "React", "Node.js", "Django", "Flask",
+            "SQL", "NoSQL", "MySQL", "MongoDB", "Pandas", "NumPy",
+            "Matplotlib", "Machine Learning", "Artificial Intelligence",
+            "Generative AI", "Computer Vision", "OpenCV", "YOLO",
+            "Hugging Face", "Power BI", "Git", "GitHub", "Docker",
+            "AWS", "PostgreSQL", "Scikit-learn", "REST APIs",
+            "Data Structures and Algorithms", "Computer Networks", "DBMS"
+        ];
+
+        const input = document.getElementById("skill-input");
+        const suggestions = document.getElementById("suggestions");
+        const selectedContainer = document.getElementById("selected-skills");
+        const hiddenInput = document.getElementById("skills-value");
+        const selectedSkills = new Map();
+
+        function renderSelected() {
+            selectedContainer.replaceChildren();
+
+            for (const [key, skill] of selectedSkills) {
+                const tag = document.createElement("span");
+                tag.className = "skill-tag";
+
+                const label = document.createElement("span");
+                label.textContent = skill;
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove-skill";
+                remove.textContent = "×";
+                remove.setAttribute("aria-label", "Remove " + skill);
+
+                remove.addEventListener("click", () => {
+                    selectedSkills.delete(key);
+                    renderSelected();
+                    renderSuggestions();
+                });
+
+                tag.append(label, remove);
+                selectedContainer.appendChild(tag);
+            }
+
+            hiddenInput.value = JSON.stringify(
+                [...selectedSkills.values()]
+            );
+        }
+
+        function addSkill(skill) {
+            const clean = skill.trim();
+            if (!clean) return;
+
+            const key = clean.toLocaleLowerCase();
+            if (selectedSkills.has(key)) return;
+
+            selectedSkills.set(key, clean);
+            input.value = "";
+            suggestions.replaceChildren();
+            renderSelected();
+        }
+
+        function renderSuggestions() {
+            suggestions.replaceChildren();
+            const query = input.value.trim().toLocaleLowerCase();
+
+            if (!query) return;
+
+            const matches = skillCatalog.filter(skill =>
+                skill.toLocaleLowerCase().includes(query) &&
+                !selectedSkills.has(skill.toLocaleLowerCase())
+            ).slice(0, 8);
+
+            for (const skill of matches) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "suggestion";
+                button.textContent = skill;
+                button.addEventListener("click", () => addSkill(skill));
+                suggestions.appendChild(button);
+            }
+        }
+
+        input.addEventListener("input", renderSuggestions);
+
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const first = suggestions.querySelector("button");
+                addSkill(first ? first.textContent : input.value);
+            }
+        });
+
+        document.getElementById("add-custom").addEventListener(
+            "click", () => addSkill(input.value)
+        );
+
+        document.querySelector("form").addEventListener("submit", event => {
+            if (selectedSkills.size === 0) {
+                event.preventDefault();
+                alert("Please select or add at least one skill.");
+            }
+        });
+    </script>
+</body>
+</html>
