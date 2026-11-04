@@ -1,6 +1,17 @@
+# Python
 __pycache__/
 *.py[cod]
+
+# Virtual environments
 .venv/
 venv/
+
+# ESCO data and temporary files
 data/esco/
 tempCodeRunnerFile.py
+
+# Local database
+db.sqlite3
+
+# User uploads
+media/
