@@ -1,32 +1,38 @@
 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AI Career Path Finder</title>
+    <link rel="stylesheet" href="{% static 'careers/app.css' %}">
 
     <style>
         * { box-sizing: border-box; }
 
         body {
             font-family: Arial, sans-serif;
-            max-width: 750px;
-            margin: 40px auto;
+            max-width: 780px;
+            margin: 32px auto;
             padding: 20px;
             color: #222;
             background: #f7f9fc;
         }
 
-        h1 { color: #244a8f; }
+        h1 { color: #244a8f; margin-bottom: 8px; }
+        .intro { color: #555; line-height: 1.5; }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #dce3ee;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
 
         .field { margin: 18px 0; }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
+        label { display: block; margin-bottom: 7px; font-weight: bold; }
 
         input, textarea {
             width: 100%;
@@ -34,41 +40,90 @@
             border: 1px solid #bbb;
             border-radius: 6px;
             font-size: 15px;
+            background: #fff;
         }
 
-        #suggestions {
-            margin-top: 4px;
-            background: white;
+        input[type="file"] { padding: 12px; }
+        small, .hint { color: #666; line-height: 1.5; }
+
+        .error {
+            padding: 12px 14px;
+            background: #fff0f0;
+            border: 1px solid #e8aaaa;
+            color: #8b1e1e;
+            border-radius: 7px;
         }
+
+        #suggestions { margin-top: 4px; background: white; }
+        .autocomplete-box { position: relative; }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid #d5dce8;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .autocomplete-list:empty { display: none; }
 
         .suggestion {
             display: block;
             width: 100%;
-            padding: 9px;
+            padding: 10px;
             text-align: left;
             background: white;
             border: 1px solid #ddd;
             cursor: pointer;
+            font-size: 15px;
         }
 
-        .suggestion:hover { background: #eaf1ff; }
+        .suggestion:hover,
+        .suggestion:focus {
+            background: #eaf1ff;
+            outline: 2px solid #2454a6;
+        }
 
-        #selected-skills {
+        .autocomplete-list .suggestion.active {background:#eaf1ff;outline:2px solid #5268e8;outline-offset:-2px}
+        .autocomplete-list .suggestion {
+            border: 0;
+            border-bottom: 1px solid #eee;
+            padding: 11px;
+        }
+
+        #selected-skills, .selected-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin: 15px 0;
         }
 
-        .skill-tag {
+        .skill-tag, .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: #e1ebff;
+            color: #244a8f;
             padding: 7px 10px;
             border-radius: 16px;
+            font-size: 14px;
         }
 
-        .remove-skill {
-            margin-left: 6px;
+        .remove-skill, .remove-tag {
             cursor: pointer;
+            width: auto;
+            border: 0;
+            background: transparent;
+            color: #244a8f;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0 2px;
         }
 
         .submit-btn {
@@ -84,74 +139,444 @@
         }
 
         .submit-btn:hover { background: #173d80; }
-    </style>
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #777;
+            margin: 16px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            height: 1px;
+            background: #ddd;
+            flex: 1;
+        }
+
+        @media (max-width: 520px) {
+            body { margin: 8px auto; padding: 14px; }
+            .panel { padding: 15px; }
+        }
+    
+/* Warm premium landing-page palette inspired by the provided reference */
+:root{--warm-bg:#201d1b;--warm-brown:#4a3b30;--warm-taupe:#8b7765;--warm-cream:#f4eee6;--warm-muted:#c9beb3;--warm-border:#ffffff28}
+body{background:#f4eee6!important;color:#211d1a!important}
+.topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:24px!important;width:min(100%,1440px)!important;margin:0 auto 34px!important;padding:18px 0!important}
+.brand{color:#f7f3ed!important;gap:10px!important}.brand-mark{width:42px!important;height:42px!important;border-radius:12px!important;background:linear-gradient(145deg,#7d6b5a,#352d27)!important;border:1px solid #b9a28b!important;color:#f7f1e9!important}.brand-word{font-weight:800!important;letter-spacing:-.04em!important;color:inherit!important}.brand-sub{color:#c9b9a8!important}
+.landing-actions{display:flex;align-items:center;gap:12px!important;flex-wrap:wrap}.landing-actions .nav-cta{margin:0!important;padding:12px 18px!important;border-radius:8px!important;border:1px solid #b8a99a!important;background:transparent!important;color:#f4eee6!important}.landing-actions .create-link{background:#e9e1d7!important;color:#211d1a!important;border-color:#e9e1d7!important}.landing-actions .getstarted-link{background:#fff!important;color:#171513!important;border-color:#fff!important;font-weight:800!important}
+.hero{position:relative!important;isolation:isolate!important;overflow:hidden!important;border-radius:18px!important;padding:58px clamp(28px,5vw,70px)!important;min-height:490px!important;background:linear-gradient(110deg,rgba(20,18,17,.96),rgba(50,40,32,.78) 55%,rgba(104,82,65,.68)),radial-gradient(ellipse at 80% 20%,#8c735d,#2b2520 65%)!important;gap:40px!important;color:#f8f4ee!important}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 75% 55%,#b5a08b33,transparent 38%),linear-gradient(135deg,#00000022,#ffffff08);backdrop-filter:blur(2px)}
+.hero h1,.hero h1 em{color:#fffaf4!important;background:none!important;-webkit-text-fill-color:#fffaf4!important}.hero .intro{color:#ded5cb!important}.eyebrow{color:#d6c2ad!important}.eyebrow-dot{background:#c8a98a!important}.hero-cta{background:#f5eee5!important;color:#211d1a!important;border-color:#f5eee5!important;box-shadow:0 10px 24px #0004!important}.hero-cta:hover{background:#e3d5c5!important}.hero-proof{color:#c9beb3!important}.hero-visual{background:linear-gradient(135deg,#ffffff18,#8b776522)!important;border-color:#ffffff35!important;backdrop-filter:blur(10px)!important}.orbit{border-color:#d7c2ad66!important}.visual-center{background:linear-gradient(145deg,#f8f3ec,#d9c8b7)!important;color:#30271f!important}.float-card{background:#f8f4ee!important;border-color:#e8ddd1!important}.float-icon{background:#e8ddd1!important;color:#554438!important}.float-card strong{color:#30271f!important}.float-card small{color:#887766!important}
+.process-strip{background:#2a2521!important;border:1px solid #ffffff18!important;border-radius:18px!important;color:#f5eee5!important;padding:22px!important}.process-strip small{color:#c9beb3!important}.process-strip>div>span{color:#c8a98a!important}
+.form-shell{background:#fff!important;border:1px solid #e4d9ce!important;border-radius:18px!important;padding:28px!important}.form-heading h2{color:#211d1a!important}.panel,.card{border-color:#e4d9ce!important}
+@media(max-width:820px){.topbar{align-items:flex-start!important;flex-direction:column!important}.landing-actions{width:100%}.hero{padding:34px 24px!important}.hero-visual{min-height:290px!important}}
+
+
+/* Full-page warm dark theme: seamless page, no poster-like hero */
+:root{--page:#211b18;--surface:#302722;--line:#514238;--ink:#f7f1e9;--muted:#c7b8aa;--accent:#e2a17e;--accent-dark:#c77c58;--terracotta:#e2a17e;--gold:#d8b98b}
+html,body{min-height:100%;background:#211b18!important}
+body{width:100%!important;max-width:none!important;margin:0!important;padding:26px clamp(20px,4vw,64px) 48px!important;background:radial-gradient(ellipse at 78% 12%,#49372b 0%,#2c231e 42%,#1d1917 100%)!important;color:#f7f1e9!important}
+.topbar{width:min(100%,1500px)!important;margin:0 auto 42px!important;background:transparent!important}
+.brand,.brand-word{color:#fff5eb!important}.brand-sub{color:#d6b99f!important}.brand-mark{background:#176b55!important;color:#fff!important;border-color:#4b8b73!important}
+.landing-actions .nav-cta{background:#332923!important;color:#fff4e8!important;border-color:#675243!important}.landing-actions .create-link{background:#e7d7c7!important;color:#2b211b!important;border-color:#e7d7c7!important}.landing-actions .getstarted-link{background:#f4eee7!important;color:#2b211b!important;border-color:#f4eee7!important}
+.hero{width:min(100%,1500px)!important;margin:0 auto!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0 30px!important;min-height:unset!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr)!important;gap:clamp(28px,4vw,64px)!important;overflow:visible!important}
+.hero:before{display:none!important}.hero-copy{min-width:0!important}.hero h1{font-size:clamp(2.8rem,5vw,5rem)!important;line-height:1.03!important;color:#fff8f0!important}.hero h1 em{color:#e39a75!important;-webkit-text-fill-color:#e39a75!important}.hero .intro{color:#d8cfc5!important}.eyebrow{color:#76c4a5!important}.eyebrow-dot{background:#d8b58e!important}.hero-proof{color:#c8b9ac!important}.hero-proof span:first-child{color:#e6a17b!important}
+.hero-cta{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:#fff!important;border:0!important}.hero-visual{background:#e7f0e9!important;border:1px solid #d6e5dc!important;box-shadow:0 24px 60px #0003!important}
+.process-strip{width:min(100%,1500px)!important;margin:0 auto 48px!important;background:#302722cc!important;border:1px solid #59483b!important;border-radius:16px!important;color:#fff3e7!important}.process-strip strong{color:#fff4e9!important}.process-strip small{color:#c7b5a5!important}.process-strip>div>span{color:#e2a17e!important}
+.form-shell{width:min(100%,1100px)!important;max-width:1100px!important;margin:0 auto!important;background:transparent!important}.form-heading h2{color:#fff5eb!important}.form-heading p{color:#c9b9aa!important}.form-heading .eyebrow{color:#79c7a8!important}
+.panel,.card,.section,.profile-form,.form-card{background:#302722!important;border-color:#59483b!important;color:#f5ece3!important;box-shadow:0 12px 35px #0002!important}.panel h2,.panel h3,.card h2,.card h3,label{color:#f6e9dc!important}.muted,.helptext,.field-help{color:#c5b5a5!important}
+input,select,textarea{background:#f8f1e8!important;color:#2b241f!important;border-color:#8b7765!important}input::placeholder,textarea::placeholder{color:#88796c!important}input:focus,select:focus,textarea:focus{outline:3px solid #e2a17e44!important;border-color:#e2a17e!important}
+.skill-tag,.selected-tag,.profile-item,.insight-pill{background:#3e342c!important;color:#f2dfce!important;border-color:#695443!important}.submit-btn{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:white!important;border-color:#7136d9!important}
+.site-footer{display:none!important}
+@media(max-width:900px){body{padding:20px 18px 36px!important}.hero{grid-template-columns:1fr!important;padding-top:8px!important}.hero-visual{min-height:320px!important}.hero h1{font-size:clamp(2.5rem,8vw,4rem)!important}.topbar{margin-bottom:26px!important}}
+@media(max-width:600px){body{padding:14px 12px 28px!important}.process-strip{grid-template-columns:1fr!important}.hero-visual{min-height:280px!important}.landing-actions{gap:8px!important}}
+
+</style>
+
+    <style>
+      :root{color-scheme:light;--ink:#17233b;--muted:#66748b;--blue:#3157d5;--line:#e4eaf3;--surface:#fff}
+      body{max-width:1080px;margin:0 auto;padding:42px 24px;background:radial-gradient(ellipse at 10% 0%,#e9efff 0,transparent 42%),#f5f7fb;color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}
+      h1{font-size:clamp(2rem,4vw,3.25rem);letter-spacing:-.045em;color:#17233b;margin:0 0 10px}
+      .intro{max-width:720px;font-size:1.08rem;color:var(--muted)}
+      .panel{border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,30px);box-shadow:0 12px 35px rgba(24,42,82,.06);margin:22px 0}
+      h2{font-size:1.25rem;letter-spacing:-.02em;color:#1d2c49}
+      input,textarea{border:1px solid #d5deeb;border-radius:10px;padding:13px 14px;transition:border-color .15s,box-shadow .15s}
+      input:focus,textarea:focus{outline:3px solid #dbe5ff;border-color:var(--blue)}
+      label{font-size:.94rem;color:#263650}
+      .submit-btn{background:linear-gradient(135deg,#3157d5,#6048c8);border-radius:11px;font-weight:700;box-shadow:0 8px 18px rgba(49,87,213,.18)}
+      .submit-btn:hover{background:#2446b8;transform:translateY(-1px)}
+      .skill-tag,.selected-tag{background:#e8efff;color:#2546a7;border:1px solid #d6e2ff}
+      .divider{font-weight:700;font-size:.8rem;letter-spacing:.12em}
+      .error{border-radius:12px}
+      @media(max-width:600px){body{padding:24px 14px}.panel{border-radius:14px}}
+      @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+    
+/* Full-page warm dark theme: seamless page, no poster-like hero */
+:root{--page:#211b18;--surface:#302722;--line:#514238;--ink:#f7f1e9;--muted:#c7b8aa;--accent:#e2a17e;--accent-dark:#c77c58;--terracotta:#e2a17e;--gold:#d8b98b}
+html,body{min-height:100%;background:#211b18!important}
+body{width:100%!important;max-width:none!important;margin:0!important;padding:26px clamp(20px,4vw,64px) 48px!important;background:radial-gradient(ellipse at 78% 12%,#49372b 0%,#2c231e 42%,#1d1917 100%)!important;color:#f7f1e9!important}
+.topbar{width:min(100%,1500px)!important;margin:0 auto 42px!important;background:transparent!important}
+.brand,.brand-word{color:#fff5eb!important}.brand-sub{color:#d6b99f!important}.brand-mark{background:#176b55!important;color:#fff!important;border-color:#4b8b73!important}
+.landing-actions .nav-cta{background:#332923!important;color:#fff4e8!important;border-color:#675243!important}.landing-actions .create-link{background:#e7d7c7!important;color:#2b211b!important;border-color:#e7d7c7!important}.landing-actions .getstarted-link{background:#f4eee7!important;color:#2b211b!important;border-color:#f4eee7!important}
+.hero{width:min(100%,1500px)!important;margin:0 auto!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0 30px!important;min-height:unset!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr)!important;gap:clamp(28px,4vw,64px)!important;overflow:visible!important}
+.hero:before{display:none!important}.hero-copy{min-width:0!important}.hero h1{font-size:clamp(2.8rem,5vw,5rem)!important;line-height:1.03!important;color:#fff8f0!important}.hero h1 em{color:#e39a75!important;-webkit-text-fill-color:#e39a75!important}.hero .intro{color:#d8cfc5!important}.eyebrow{color:#76c4a5!important}.eyebrow-dot{background:#d8b58e!important}.hero-proof{color:#c8b9ac!important}.hero-proof span:first-child{color:#e6a17b!important}
+.hero-cta{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:#fff!important;border:0!important}.hero-visual{background:#e7f0e9!important;border:1px solid #d6e5dc!important;box-shadow:0 24px 60px #0003!important}
+.process-strip{width:min(100%,1500px)!important;margin:0 auto 48px!important;background:#302722cc!important;border:1px solid #59483b!important;border-radius:16px!important;color:#fff3e7!important}.process-strip strong{color:#fff4e9!important}.process-strip small{color:#c7b5a5!important}.process-strip>div>span{color:#e2a17e!important}
+.form-shell{width:min(100%,1100px)!important;max-width:1100px!important;margin:0 auto!important;background:transparent!important}.form-heading h2{color:#fff5eb!important}.form-heading p{color:#c9b9aa!important}.form-heading .eyebrow{color:#79c7a8!important}
+.panel,.card,.section,.profile-form,.form-card{background:#302722!important;border-color:#59483b!important;color:#f5ece3!important;box-shadow:0 12px 35px #0002!important}.panel h2,.panel h3,.card h2,.card h3,label{color:#f6e9dc!important}.muted,.helptext,.field-help{color:#c5b5a5!important}
+input,select,textarea{background:#f8f1e8!important;color:#2b241f!important;border-color:#8b7765!important}input::placeholder,textarea::placeholder{color:#88796c!important}input:focus,select:focus,textarea:focus{outline:3px solid #e2a17e44!important;border-color:#e2a17e!important}
+.skill-tag,.selected-tag,.profile-item,.insight-pill{background:#3e342c!important;color:#f2dfce!important;border-color:#695443!important}.submit-btn{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:white!important;border-color:#7136d9!important}
+.site-footer{display:none!important}
+@media(max-width:900px){body{padding:20px 18px 36px!important}.hero{grid-template-columns:1fr!important;padding-top:8px!important}.hero-visual{min-height:320px!important}.hero h1{font-size:clamp(2.5rem,8vw,4rem)!important}.topbar{margin-bottom:26px!important}}
+@media(max-width:600px){body{padding:14px 12px 28px!important}.process-strip{grid-template-columns:1fr!important}.hero-visual{min-height:280px!important}.landing-actions{gap:8px!important}}
+
+</style>
+
+
+    <style>
+      :root{--navy:#111b35;--ink:#1b2742;--muted:#6d7890;--line:#e5e9f2;--blue:#5368e8;--lav:#8c78ed}
+      html{scroll-behavior:smooth;scroll-padding-top:24px}body{max-width:1200px;padding:28px 34px 18px;background:#f7f8fc;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+      .topbar{display:flex;align-items:center;justify-content:space-between;margin:0 0 36px}.brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--navy);font-weight:850;font-size:1.12rem;letter-spacing:-.03em}.brand-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;color:white;background:linear-gradient(135deg,#5268e8,#9276ef)}.brand-sub{font-size:.68rem;color:#65718b;letter-spacing:.1em;text-transform:uppercase}.nav-cta{color:#3445ad;text-decoration:none;font-weight:750;font-size:.9rem;padding:10px 15px;border:1px solid #dce2f8;border-radius:12px;background:#fff}
+      .hero{display:grid;grid-template-columns:1.08fr .92fr;align-items:center;gap:34px;padding:24px 0 38px}.hero-copy{padding:10px 0}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#5a62c9;font-size:.72rem;font-weight:850;letter-spacing:.13em}.eyebrow-dot{width:7px;height:7px;border-radius:50%;background:#8b78ec}.hero h1{font-size:clamp(2.6rem,5vw,4.6rem);line-height:1.04;letter-spacing:-.065em;margin:18px 0;color:var(--navy)}.hero h1 em{font-style:normal;background:linear-gradient(90deg,#5268e8,#8b71e8);-webkit-background-clip:text;background-clip:text;color:transparent}.hero .intro{font-size:1.08rem;line-height:1.75;max-width:560px;color:#66728a;margin:18px 0 24px}.hero-cta{display:inline-flex;align-items:center;gap:22px;padding:14px 19px;border-radius:13px;background:linear-gradient(135deg,#5268e8,#7563dc);color:#fff;text-decoration:none;font-weight:800;box-shadow:0 12px 25px #5968df30}.hero-proof{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px;color:#7b8498;font-size:.78rem}.hero-proof span:first-child{color:#7064db}
+      .hero-visual{min-height:360px;position:relative;display:grid;place-items:center;border:1px solid #e7e9f5;border-radius:30px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#e8eaff 0,#f0efff 35%,#f8f8ff 72%)}.orbit{position:absolute;border:1px dashed #c8c9f3;border-radius:50%;transform:rotate(-22deg)}.orbit-one{width:290px;height:210px}.orbit-two{width:360px;height:280px;transform:rotate(38deg)}.visual-center{z-index:1;width:148px;height:148px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff,#f5f5ff);border:1px solid #fff;box-shadow:0 18px 48px #5d63c52b;color:#24315a}.visual-center span{font-size:1.8rem;color:#7567df}.visual-center strong{font-size:.9rem;margin-top:3px}.visual-center small{color:#8990a8}.float-card{position:absolute;z-index:2;display:flex;align-items:center;gap:10px;padding:13px 15px;background:#fff;border:1px solid #eceef7;border-radius:15px;box-shadow:0 12px 28px #29345c12}.float-card small{display:block;font-size:.58rem;letter-spacing:.1em;color:#8790a6;font-weight:800}.float-card strong{display:block;font-size:.78rem;color:#263252;margin-top:3px}.float-icon{display:grid;place-items:center;width:33px;height:33px;border-radius:10px;background:#eef0ff;color:#5b62d9;font-weight:900}.float-career{top:44px;left:22px}.float-skills{right:18px;top:135px}.float-roadmap{bottom:38px;left:36px}
+      .process-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 22px;margin:0 0 32px;background:#fff;border:1px solid var(--line);border-radius:18px}.process-strip>div{display:grid;grid-template-columns:35px 1fr;column-gap:10px;align-items:center}.process-strip>div>span{grid-row:span 2;color:#7b72e5;font-size:.78rem;font-weight:900}.process-strip strong{font-size:.86rem;color:#293653}.process-strip small{font-size:.75rem;color:#8490a5}.form-shell{max-width:920px;margin:0 auto}.form-heading{text-align:center;margin:28px 0 22px}.form-heading h2{font-size:clamp(1.8rem,3vw,2.5rem);margin:9px 0;color:var(--navy);letter-spacing:-.045em}.form-heading p{color:#748098;margin:0}.panel{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 35px #1b2b5010;padding:clamp(20px,3vw,30px);margin:18px 0}.panel h2{color:#263451;font-size:1.1rem}.field{margin:20px 0}.field input:not([type=file]){background:#fbfcff}.submit-btn{font-size:1rem;padding:15px;border-radius:13px}.divider{color:#8992a6}.site-footer{display:flex;justify-content:space-between;gap:12px;padding:30px 4px 10px;color:#8992a6;font-size:.76rem}.site-footer span:first-child{font-weight:800;color:#53618a}
+      @media(max-width:820px){body{padding:20px 16px}.hero{grid-template-columns:1fr;padding-top:0}.hero-visual{min-height:310px}.hero h1{font-size:clamp(2.5rem,8vw,4rem)}}@media(max-width:600px){.process-strip{grid-template-columns:1fr;gap:14px}.process-strip>div{grid-template-columns:30px 1fr}.hero-visual{min-height:280px}.float-card{padding:10px}.float-career{left:8px;top:24px}.float-skills{right:8px;top:112px}.float-roadmap{left:10px;bottom:20px}.site-footer{flex-direction:column}.topbar{margin-bottom:20px}}
+      @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-cta,.panel{transition:none}}
+    
+/* Warm botanical theme: replaces the previous blue-heavy palette */
+:root{
+ --navy:#263a32; --muted:#69766d; --accent:#386b57; --line:#e4e3d8;
+ --surface:#fffdf8; --warm-bg:#f5f2e9; --terracotta:#b96f52; --gold:#c49a55;
+}
+body, body.app { background:#f5f2e9 !important; color:#263a32 !important; }
+h1,h2,h3,h4,.brand,.results-hero h1,.form-heading h1 { color:#263a32 !important; }
+a { color:#386b57; }
+button,.btn,.submit-btn,.nav-cta,.hero-cta { background:#386b57 !important; border-color:#386b57 !important; color:#fff !important; }
+button:hover,.btn:hover,.submit-btn:hover,.nav-cta:hover,.hero-cta:hover { background:#2b5544 !important; border-color:#2b5544 !important; }
+.btn.secondary,.back-link,.nav a { background:#fffdf8 !important; color:#386b57 !important; border-color:#d8ded4 !important; }
+.section,.panel,.card,.career-card,.profile-item,.results-nav,.roadmap,.roadmap-mini,.learning-coach {
+ background:#fffdf8 !important; border-color:#e4e3d8 !important;
+}
+.profile-item,.skill-tag,.selected-tag,.insight-pill { background:#edf2e9 !important; color:#315747 !important; border-color:#d6e2d5 !important; }
+.progress-fill,.progress span,.progress-track span { background:#b96f52 !important; }
+.progress-track,.progress,.roadmap-progress { background:#e8e4d8 !important; }
+.eyebrow,.brand-sub,.subtitle,.muted,.hint,small { color:#69766d !important; }
+input,textarea,select { background:#fffefa !important; border-color:#d8ded4 !important; color:#263a32 !important; }
+input:focus,textarea:focus,select:focus { outline:3px solid #386b5726 !important; border-color:#386b57 !important; }
+.autocomplete-list,.autocomplete-box { background:#fffefa !important; border-color:#d8ded4 !important; box-shadow:0 14px 34px #263a3218 !important; }
+.suggestion.active,.suggestion[aria-selected="true"] { background:#edf2e9 !important; color:#263a32 !important; }
+.error { background:#fff1ec !important; color:#914b35 !important; border-color:#e8c2b3 !important; }
+.milestone,.next-task { background:#f4ead9 !important; border-color:#e8d7b9 !important; }
+@media(max-width:700px){ .results-nav{overflow-x:auto} }
+
+/* Full-page warm dark theme: seamless page, no poster-like hero */
+:root{--page:#211b18;--surface:#302722;--line:#514238;--ink:#f7f1e9;--muted:#c7b8aa;--accent:#e2a17e;--accent-dark:#c77c58;--terracotta:#e2a17e;--gold:#d8b98b}
+html,body{min-height:100%;background:#211b18!important}
+body{width:100%!important;max-width:none!important;margin:0!important;padding:26px clamp(20px,4vw,64px) 48px!important;background:radial-gradient(ellipse at 78% 12%,#49372b 0%,#2c231e 42%,#1d1917 100%)!important;color:#f7f1e9!important}
+.topbar{width:min(100%,1500px)!important;margin:0 auto 42px!important;background:transparent!important}
+.brand,.brand-word{color:#fff5eb!important}.brand-sub{color:#d6b99f!important}.brand-mark{background:#176b55!important;color:#fff!important;border-color:#4b8b73!important}
+.landing-actions .nav-cta{background:#332923!important;color:#fff4e8!important;border-color:#675243!important}.landing-actions .create-link{background:#e7d7c7!important;color:#2b211b!important;border-color:#e7d7c7!important}.landing-actions .getstarted-link{background:#f4eee7!important;color:#2b211b!important;border-color:#f4eee7!important}
+.hero{width:min(100%,1500px)!important;margin:0 auto!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0 30px!important;min-height:unset!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr)!important;gap:clamp(28px,4vw,64px)!important;overflow:visible!important}
+.hero:before{display:none!important}.hero-copy{min-width:0!important}.hero h1{font-size:clamp(2.8rem,5vw,5rem)!important;line-height:1.03!important;color:#fff8f0!important}.hero h1 em{color:#e39a75!important;-webkit-text-fill-color:#e39a75!important}.hero .intro{color:#d8cfc5!important}.eyebrow{color:#76c4a5!important}.eyebrow-dot{background:#d8b58e!important}.hero-proof{color:#c8b9ac!important}.hero-proof span:first-child{color:#e6a17b!important}
+.hero-cta{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:#fff!important;border:0!important}.hero-visual{background:#e7f0e9!important;border:1px solid #d6e5dc!important;box-shadow:0 24px 60px #0003!important}
+.process-strip{width:min(100%,1500px)!important;margin:0 auto 48px!important;background:#302722cc!important;border:1px solid #59483b!important;border-radius:16px!important;color:#fff3e7!important}.process-strip strong{color:#fff4e9!important}.process-strip small{color:#c7b5a5!important}.process-strip>div>span{color:#e2a17e!important}
+.form-shell{width:min(100%,1100px)!important;max-width:1100px!important;margin:0 auto!important;background:transparent!important}.form-heading h2{color:#fff5eb!important}.form-heading p{color:#c9b9aa!important}.form-heading .eyebrow{color:#79c7a8!important}
+.panel,.card,.section,.profile-form,.form-card{background:#302722!important;border-color:#59483b!important;color:#f5ece3!important;box-shadow:0 12px 35px #0002!important}.panel h2,.panel h3,.card h2,.card h3,label{color:#f6e9dc!important}.muted,.helptext,.field-help{color:#c5b5a5!important}
+input,select,textarea{background:#f8f1e8!important;color:#2b241f!important;border-color:#8b7765!important}input::placeholder,textarea::placeholder{color:#88796c!important}input:focus,select:focus,textarea:focus{outline:3px solid #e2a17e44!important;border-color:#e2a17e!important}
+.skill-tag,.selected-tag,.profile-item,.insight-pill{background:#3e342c!important;color:#f2dfce!important;border-color:#695443!important}.submit-btn{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:white!important;border-color:#7136d9!important}
+.site-footer{display:none!important}
+@media(max-width:900px){body{padding:20px 18px 36px!important}.hero{grid-template-columns:1fr!important;padding-top:8px!important}.hero-visual{min-height:320px!important}.hero h1{font-size:clamp(2.5rem,8vw,4rem)!important}.topbar{margin-bottom:26px!important}}
+@media(max-width:600px){body{padding:14px 12px 28px!important}.process-strip{grid-template-columns:1fr!important}.hero-visual{min-height:280px!important}.landing-actions{gap:8px!important}}
+
+</style>
+
+<style>
+:root{--ink:#172b27;--muted:#64736d;--accent:#176b52;--copper:#bd6847;--line:#dce5df;--surface:#fff;--page:#eef3f0}
+html,body{min-height:100%;}body{max-width:none!important;width:100%!important;margin:0!important;padding:28px 4vw!important;background:#eef3f0!important;color:#172b27!important;font-family:Inter,"Segoe UI",Arial,sans-serif!important}
+.topbar,.process-strip,.hero,.profile-form,.form-wrap{width:min(100%,1320px)!important;margin-left:auto!important;margin-right:auto!important}
+.hero{grid-template-columns:minmax(0,1.1fr) minmax(380px,.9fr)!important;gap:42px!important;padding:24px 0 34px!important}
+.hero h1{font-size:clamp(2.5rem,3.6vw,4.2rem)!important}.hero-visual{background:#e7f1ec!important;border-color:#dce5df!important}.visual-center span{color:#176b52!important}.orbit{border-color:#b8d4c6!important}
+.hero h1 em{background:none!important;color:#bd6847!important;-webkit-text-fill-color:#bd6847!important}
+.hero-cta,.submit-btn,button,.nav-cta{background:#176b52!important;border-color:#176b52!important}.hero-cta:hover,.submit-btn:hover,button:hover{background:#10533f!important}
+.card,.panel,.section,.profile-form,.form-card{background:#fff!important;border-color:#dce5df!important;box-shadow:0 8px 24px #172b270a!important}
+input,textarea,select{background:#fff!important;border-color:#cfdcd4!important;color:#172b27!important}
+.skill-tag,.selected-tag,.skill-chip{background:#e5f2ec!important;color:#14563f!important;border-color:#c8e1d5!important}
+.process-strip{background:#fff!important;border-color:#dce5df!important}.brand,.brand-sub{color:#172b27!important}.brand-mark{background:#176b52!important}
+@media(max-width:900px){body{padding:18px 16px!important}.hero{grid-template-columns:1fr!important}.hero-visual{min-height:280px}}
+
+/* Full-page warm dark theme: seamless page, no poster-like hero */
+:root{--page:#211b18;--surface:#302722;--line:#514238;--ink:#f7f1e9;--muted:#c7b8aa;--accent:#e2a17e;--accent-dark:#c77c58;--terracotta:#e2a17e;--gold:#d8b98b}
+html,body{min-height:100%;background:#211b18!important}
+body{width:100%!important;max-width:none!important;margin:0!important;padding:26px clamp(20px,4vw,64px) 48px!important;background:radial-gradient(ellipse at 78% 12%,#49372b 0%,#2c231e 42%,#1d1917 100%)!important;color:#f7f1e9!important}
+.topbar{width:min(100%,1500px)!important;margin:0 auto 42px!important;background:transparent!important}
+.brand,.brand-word{color:#fff5eb!important}.brand-sub{color:#d6b99f!important}.brand-mark{background:#176b55!important;color:#fff!important;border-color:#4b8b73!important}
+.landing-actions .nav-cta{background:#332923!important;color:#fff4e8!important;border-color:#675243!important}.landing-actions .create-link{background:#e7d7c7!important;color:#2b211b!important;border-color:#e7d7c7!important}.landing-actions .getstarted-link{background:#f4eee7!important;color:#2b211b!important;border-color:#f4eee7!important}
+.hero{width:min(100%,1500px)!important;margin:0 auto!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0 30px!important;min-height:unset!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr)!important;gap:clamp(28px,4vw,64px)!important;overflow:visible!important}
+.hero:before{display:none!important}.hero-copy{min-width:0!important}.hero h1{font-size:clamp(2.8rem,5vw,5rem)!important;line-height:1.03!important;color:#fff8f0!important}.hero h1 em{color:#e39a75!important;-webkit-text-fill-color:#e39a75!important}.hero .intro{color:#d8cfc5!important}.eyebrow{color:#76c4a5!important}.eyebrow-dot{background:#d8b58e!important}.hero-proof{color:#c8b9ac!important}.hero-proof span:first-child{color:#e6a17b!important}
+.hero-cta{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:#fff!important;border:0!important}.hero-visual{background:#e7f0e9!important;border:1px solid #d6e5dc!important;box-shadow:0 24px 60px #0003!important}
+.process-strip{width:min(100%,1500px)!important;margin:0 auto 48px!important;background:#302722cc!important;border:1px solid #59483b!important;border-radius:16px!important;color:#fff3e7!important}.process-strip strong{color:#fff4e9!important}.process-strip small{color:#c7b5a5!important}.process-strip>div>span{color:#e2a17e!important}
+.form-shell{width:min(100%,1100px)!important;max-width:1100px!important;margin:0 auto!important;background:transparent!important}.form-heading h2{color:#fff5eb!important}.form-heading p{color:#c9b9aa!important}.form-heading .eyebrow{color:#79c7a8!important}
+.panel,.card,.section,.profile-form,.form-card{background:#302722!important;border-color:#59483b!important;color:#f5ece3!important;box-shadow:0 12px 35px #0002!important}.panel h2,.panel h3,.card h2,.card h3,label{color:#f6e9dc!important}.muted,.helptext,.field-help{color:#c5b5a5!important}
+input,select,textarea{background:#f8f1e8!important;color:#2b241f!important;border-color:#8b7765!important}input::placeholder,textarea::placeholder{color:#88796c!important}input:focus,select:focus,textarea:focus{outline:3px solid #e2a17e44!important;border-color:#e2a17e!important}
+.skill-tag,.selected-tag,.profile-item,.insight-pill{background:#3e342c!important;color:#f2dfce!important;border-color:#695443!important}.submit-btn{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:white!important;border-color:#7136d9!important}
+.site-footer{display:none!important}
+@media(max-width:900px){body{padding:20px 18px 36px!important}.hero{grid-template-columns:1fr!important;padding-top:8px!important}.hero-visual{min-height:320px!important}.hero h1{font-size:clamp(2.5rem,8vw,4rem)!important}.topbar{margin-bottom:26px!important}}
+@media(max-width:600px){body{padding:14px 12px 28px!important}.process-strip{grid-template-columns:1fr!important}.hero-visual{min-height:280px!important}.landing-actions{gap:8px!important}}
+
+</style>
+
+<style>
+:root{--ink:#18352d;--muted:#69766f;--accent:#176b55;--line:#d8e3d9;--surface:#fffdf8;--page:#f7f4ec;--terracotta:#c47755;--gold:#c6a15b}
+html,body{min-height:100%;width:100%;max-width:none!important;margin:0!important;background:var(--page)!important;color:var(--ink)!important;font-family:Inter,"Segoe UI",Arial,sans-serif!important}
+body{padding:24px clamp(18px,3vw,48px)!important}.topbar,.container,.form-shell{width:min(100%,1440px)!important;max-width:1440px!important;margin-inline:auto!important}
+.hero{grid-template-columns:minmax(0,1fr) minmax(420px,.9fr)!important;gap:clamp(24px,4vw,64px)!important;align-items:center!important;padding:28px 0 40px!important}
+.hero h1{font-size:clamp(2.6rem,4.5vw,4.2rem)!important}.hero-visual{min-height:420px!important;background:#e7f0e9!important;border-color:var(--line)!important}.orbit{border-color:#b8d2c3!important}.visual-center{color:var(--ink)!important}.visual-center span{color:var(--accent)!important}
+.float-icon{background:#edf2e9!important;color:var(--accent)!important}.float-card{border-color:var(--line)!important}.float-card small{color:var(--muted)!important}.float-card strong{color:var(--ink)!important}
+.process-strip,.panel{background:var(--surface)!important;border-color:var(--line)!important}.panel{border-radius:16px!important}.form-heading h2{color:var(--ink)!important}.eyebrow{color:var(--accent)!important}
+input,textarea{background:#fffefa!important;border-color:var(--line)!important;color:var(--ink)!important}.submit-btn,.hero-cta{background:var(--accent)!important;color:#fff!important}.submit-btn:hover,.hero-cta:hover{background:#125440!important}
+.skill-tag,.selected-tag{background:#edf2e9!important;color:#315747!important;border-color:#d6e2d5!important}
+.brand-mark{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;font-size:22px}
+@media(max-width:900px){body{padding:18px!important}.hero{grid-template-columns:1fr!important}.hero-visual{min-height:320px!important}}
+
+/* Final warm landing-page layout overrides */
+html, body { min-height:100%; }
+body {
+  width:calc(100% - 48px) !important;
+  max-width:1440px !important;
+  margin:0 auto !important;
+  padding:24px 0 36px !important;
+  background:#f3eee7 !important;
+  color:#2b241f !important;
+}
+.form-shell { max-width:1000px !important; }
+.form-shell, .panel { background:#fffaf4 !important; }
+.process-strip { background:#fffaf4 !important; border-color:#ded3c6 !important; }
+.process-strip strong { color:#332820 !important; }
+.process-strip small { color:#8b7868 !important; }
+@media(max-width:820px) { body { width:calc(100% - 32px) !important; padding:18px 0 28px !important; } }
+@media(max-width:600px) { body { width:calc(100% - 24px) !important; padding:12px 0 24px !important; } }
+
+/* Full-page warm dark theme: seamless page, no poster-like hero */
+:root{--page:#211b18;--surface:#302722;--line:#514238;--ink:#f7f1e9;--muted:#c7b8aa;--accent:#e2a17e;--accent-dark:#c77c58;--terracotta:#e2a17e;--gold:#d8b98b}
+html,body{min-height:100%;background:#211b18!important}
+body{width:100%!important;max-width:none!important;margin:0!important;padding:26px clamp(20px,4vw,64px) 48px!important;background:radial-gradient(ellipse at 78% 12%,#49372b 0%,#2c231e 42%,#1d1917 100%)!important;color:#f7f1e9!important}
+.topbar{width:min(100%,1500px)!important;margin:0 auto 42px!important;background:transparent!important}
+.brand,.brand-word{color:#fff5eb!important}.brand-sub{color:#d6b99f!important}.brand-mark{background:#176b55!important;color:#fff!important;border-color:#4b8b73!important}
+.landing-actions .nav-cta{background:#332923!important;color:#fff4e8!important;border-color:#675243!important}.landing-actions .create-link{background:#e7d7c7!important;color:#2b211b!important;border-color:#e7d7c7!important}.landing-actions .getstarted-link{background:#f4eee7!important;color:#2b211b!important;border-color:#f4eee7!important}
+.hero{width:min(100%,1500px)!important;margin:0 auto!important;max-width:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:12px 0 30px!important;min-height:unset!important;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr)!important;gap:clamp(28px,4vw,64px)!important;overflow:visible!important}
+.hero:before{display:none!important}.hero-copy{min-width:0!important}.hero h1{font-size:clamp(2.8rem,5vw,5rem)!important;line-height:1.03!important;color:#fff8f0!important}.hero h1 em{color:#e39a75!important;-webkit-text-fill-color:#e39a75!important}.hero .intro{color:#d8cfc5!important}.eyebrow{color:#76c4a5!important}.eyebrow-dot{background:#d8b58e!important}.hero-proof{color:#c8b9ac!important}.hero-proof span:first-child{color:#e6a17b!important}
+.hero-cta{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:#fff!important;border:0!important}.hero-visual{background:#e7f0e9!important;border:1px solid #d6e5dc!important;box-shadow:0 24px 60px #0003!important}
+.process-strip{width:min(100%,1500px)!important;margin:0 auto 48px!important;background:#302722cc!important;border:1px solid #59483b!important;border-radius:16px!important;color:#fff3e7!important}.process-strip strong{color:#fff4e9!important}.process-strip small{color:#c7b5a5!important}.process-strip>div>span{color:#e2a17e!important}
+.form-shell{width:min(100%,1100px)!important;max-width:1100px!important;margin:0 auto!important;background:transparent!important}.form-heading h2{color:#fff5eb!important}.form-heading p{color:#c9b9aa!important}.form-heading .eyebrow{color:#79c7a8!important}
+.panel,.card,.section,.profile-form,.form-card{background:#302722!important;border-color:#59483b!important;color:#f5ece3!important;box-shadow:0 12px 35px #0002!important}.panel h2,.panel h3,.card h2,.card h3,label{color:#f6e9dc!important}.muted,.helptext,.field-help{color:#c5b5a5!important}
+input,select,textarea{background:#f8f1e8!important;color:#2b241f!important;border-color:#8b7765!important}input::placeholder,textarea::placeholder{color:#88796c!important}input:focus,select:focus,textarea:focus{outline:3px solid #e2a17e44!important;border-color:#e2a17e!important}
+.skill-tag,.selected-tag,.profile-item,.insight-pill{background:#3e342c!important;color:#f2dfce!important;border-color:#695443!important}.submit-btn{background:linear-gradient(135deg,#8b4cf2,#7136d9)!important;color:white!important;border-color:#7136d9!important}
+.site-footer{display:none!important}
+@media(max-width:900px){body{padding:20px 18px 36px!important}.hero{grid-template-columns:1fr!important;padding-top:8px!important}.hero-visual{min-height:320px!important}.hero h1{font-size:clamp(2.5rem,8vw,4rem)!important}.topbar{margin-bottom:26px!important}}
+@media(max-width:600px){body{padding:14px 12px 28px!important}.process-strip{grid-template-columns:1fr!important}.hero-visual{min-height:280px!important}.landing-actions{gap:8px!important}}
+
+</style>
+
 </head>
 
 <body>
-    
-    <h1>AI Career Path Finder</h1>
-    <p>Enter your profile to discover suitable careers and skill gaps.</p>
+    <nav class="topbar" aria-label="Main navigation">
+        <a class="brand" href="{% url 'home' %}"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" width="30" height="30" fill="none"><path d="M20 4 31 10.5V23L20 36 9 23V10.5L20 4Z" stroke="currentColor" stroke-width="2.2"/><path d="M20 11 24 19 20 28 16 19 20 11Z" fill="currentColor"/><circle cx="20" cy="20" r="2.5" fill="#C8A98A"/></svg></span><span class="brand-word">PathFinder</span><span class="brand-sub">AI</span></a>
+        <nav class="landing-actions">{% if request.user.is_authenticated %}<a class="nav-cta" href="{% url 'dashboard' %}">Dashboard</a><a class="nav-cta" href="{% url 'logout' %}">Log out</a>{% else %}<a class="nav-cta login-link" href="{% url 'login' %}">Login</a><a class="nav-cta create-link" href="{% url 'register' %}">Create Account</a><a class="nav-cta getstarted-link" href="#profile-heading">Get Started</a>{% endif %}</nav>
+    </nav>
+    <header class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow"><span class="eyebrow-dot"></span> YOUR CAREER, WITH A CLEARER PATH</span>
+            <h1>Turn your skills into<br><em>your next opportunity.</em></h1>
+            <p class="intro">Discover career paths that fit your strengths, understand the skills you’re missing, and build a learning plan you can actually follow.</p>
+            <a class="hero-cta" href="#resume-heading">Discover my career path <span aria-hidden="true">→</span></a>
+            <div class="hero-proof"><span>P</span> Resume insights <span>·</span> Skill gap analysis <span>·</span> Personal roadmaps</div>
+        </div>
+        <div class="hero-visual" aria-label="Illustration of career discovery and learning progress">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="visual-center"><span aria-hidden="true">⌖</span><strong>Your potential</strong><small>starts here</small></div>
+            <div class="float-card float-career"><span class="float-icon">↗</span><div><small>CAREER MATCH</small><strong>Find your direction</strong></div></div>
+            <div class="float-card float-skills"><span class="float-icon">✓</span><div><small>SKILL INSIGHTS</small><strong>Know what to learn</strong></div></div>
+            <div class="float-card float-roadmap"><span class="float-icon">⌁</span><div><small>LEARNING PATH</small><strong>One step at a time</strong></div></div>
+        </div>
+    </header>
+    <div class="process-strip"><div><span>01</span><strong>Share your profile</strong><small>Resume or manual entry</small></div><div><span>02</span><strong>Explore your matches</strong><small>Career fit & skill coverage</small></div><div><span>03</span><strong>Build your roadmap</strong><small>Learn, track, grow</small></div></div>
 
-    <form method="post" action="{% url 'home' %}">
+    <main class="form-shell">
+      <div class="form-heading"><span class="eyebrow">LET’S GET TO KNOW YOU</span><h2>Start with your profile</h2><p>Use your resume, enter details manually, or combine both.</p></div>
+
+    {% if error %}
+        <p class="error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'home' %}"
+          enctype="multipart/form-data">
+
         {% csrf_token %}
+        <input type="hidden" name="profile_id" value="{{ selected_profile.pk|default:'' }}"><div class="field"><label for="profile-name">Career profile name{% if request.user.is_authenticated %} (required){% else %} (optional){% endif %}</label><input id="profile-name" name="profile_name" value="{{ selected_profile.name|default:'' }}" placeholder="e.g. Python Developer Career Plan" {% if request.user.is_authenticated and not selected_profile %}required{% endif %}></div>
+        {% if request.user.is_authenticated %}<p class="hint">Signed in as {{ request.user.username }} · this analysis will be saved to your account.</p>{% else %}<p class="hint"><a href="{% url 'login' %}">Log in</a> or <a href="{% url 'register' %}">create an account</a> to save profiles and progress.</p>{% endif %}
 
-        <div class="field">
-            <label for="education">Education</label>
-            <input id="education" name="education"
-                   placeholder="e.g. B.Tech in AIML" required>
-        </div>
+        <section class="panel" aria-labelledby="resume-heading">
+            <h2 id="resume-heading">Option 1: Upload your resume</h2>
 
-        <div class="field">
-            <label for="experience">Experience (years)</label>
-            <input id="experience" name="experience"
-                   type="number" min="0" max="60" value="0" required>
-        </div>
+            <div class="field">
+                <label for="resume">Resume file (PDF or DOCX)</label>
+                <input id="resume" name="resume" type="file"
+                       accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 
-        <div class="field">
-            <label for="skill-input">Search or enter a skill</label>
-            <input id="skill-input" type="text"
-                   placeholder="Type Python, SQL, React..."
-                   autocomplete="off">
+                <small>
+                    Maximum file size: 5 MB. Your file is processed in memory
+                    and is not saved by this feature.
+                </small>
+            </div>
 
-            <div id="suggestions"></div>
-            <div id="selected-skills"></div>
+            <p class="hint">
+                We'll extract readable text and identify supported skills.
+                Scanned/image-only PDFs may not work without OCR.
+            </p>
+        </section>
 
-            <button type="button" id="add-custom">
-                Add custom skill
-            </button>
+        <div class="divider">AND / OR</div>
 
-            <input type="hidden" id="skills-value" name="skills"
-                   value="[]">
-        </div>
+        <section class="panel" aria-labelledby="profile-heading">
+            <h2 id="profile-heading">Option 2: Enter details manually</h2>
 
-        <div class="field">
-            <label for="interests">Career interests</label>
-            <textarea id="interests" name="interests" rows="2"
-                      placeholder="e.g. Python development, web development, AI"></textarea>
-        </div>
+            <p class="hint">
+                Manually selected skills are combined with skills detected
+                from your resume.
+            </p>
 
-        <div class="field">
-            <label for="target-career">Target career (optional)</label>
-            <input id="target-career" name="target_career"
-                   placeholder="e.g. Python Developer">
-            <small>Leave blank to see profile-based recommendations only.</small>
-        </div>
+            <div class="field">
+                <label for="name">Name (optional)</label>
+                <input id="name" name="name" placeholder="Your name">
+            </div>
+
+            <div class="field">
+                <label for="education">
+                    Education (optional if included in resume)
+                </label>
+                <input id="education" name="education"
+                       placeholder="e.g. B.Tech in AIML">
+            </div>
+
+            <div class="field">
+                <label for="experience">Experience (years)</label>
+                <input id="experience" name="experience" type="number"
+                       min="0" max="60" step="0.5"
+                       placeholder="e.g. 0 for a fresher">
+            </div>
+
+            <div class="field">
+                <label for="projects">Projects (optional)</label>
+                <textarea id="projects" name="projects" rows="3" placeholder="Add project names or brief descriptions"></textarea>
+            </div>
+            <div class="field">
+                <label for="certifications">Certifications (optional)</label>
+                <textarea id="certifications" name="certifications" rows="2" placeholder="Add certifications or courses"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="skill-input">Search or enter a skill</label>
+                <input id="skill-input" type="text"
+                       placeholder="Type Python, SQL, React..."
+                       autocomplete="off">
+
+                <div id="suggestions" role="listbox"></div>
+                <div id="selected-skills"></div>
+
+                <button type="button" id="add-custom">
+                    Add custom skill
+                </button>
+
+                <input type="hidden" id="skills-value"
+                       name="skills" value="[]">
+            </div>
+
+            <div class="field">
+                <label for="interests-input">Career interests</label>
+
+                <div class="autocomplete-box">
+                    <input id="interests-input" type="text"
+                           placeholder="Type Python, Data Science..."
+                           autocomplete="off">
+
+                    <div id="interest-suggestions" role="listbox"
+                         class="autocomplete-list"></div>
+                </div>
+
+                <div id="selected-interests" class="selected-tags"></div>
+
+                <input type="hidden" id="interests-value"
+                       name="interests" value="">
+
+                <small>
+                    Select multiple interests. Click × to remove any interest.
+                </small>
+            </div>
+
+            <div class="field">
+                <label for="target-career-input">
+                    Target career (optional)
+                </label>
+
+                <div class="autocomplete-box">
+                    <input id="target-career-input" type="text"
+                           placeholder="Type Python Developer..."
+                           autocomplete="off">
+
+                    <div id="career-suggestions" role="listbox"
+                         class="autocomplete-list"></div>
+                </div>
+
+                <div id="selected-career" class="selected-tags"></div>
+
+                <input type="hidden" id="target-career-value"
+                       name="target_career" value="">
+
+                <small>
+                    Select one target career. Click × to remove it.
+                </small>
+                <br>
+                <small>
+                    Leave blank to see profile-based recommendations only.
+                </small>
+            </div>
+        </section>
 
         <button class="submit-btn" type="submit">
             Find My Career
         </button>
     </form>
+    </main>
+
 
     <script>
+        // =====================================
+        // 1. SKILLS AUTOCOMPLETE
+        // =====================================
+
+        function setHighlightedLabel(button, label, query) {
+            button.replaceChildren();
+            const lower=label.toLocaleLowerCase(), q=(query||"").toLocaleLowerCase();
+            const index=q?lower.indexOf(q):-1;
+            if(index<0){button.textContent=label;return;}
+            button.append(document.createTextNode(label.slice(0,index)));
+            const mark=document.createElement("mark");mark.textContent=label.slice(index,index+q.length);button.append(mark);
+            button.append(document.createTextNode(label.slice(index+q.length)));
+        }
+
         const skillCatalog = [
             "Python", "Java", "C", "C++", "JavaScript", "TypeScript",
             "HTML", "CSS", "React", "Node.js", "Django", "Flask",
             "SQL", "NoSQL", "MySQL", "MongoDB", "Pandas", "NumPy",
             "Matplotlib", "Machine Learning", "Artificial Intelligence",
-            "Generative AI", "Computer Vision", "OpenCV", "YOLO",
-            "Hugging Face", "Power BI", "Git", "GitHub", "Docker",
-            "AWS", "PostgreSQL", "Scikit-learn", "REST APIs",
-            "Data Structures and Algorithms", "Computer Networks", "DBMS"
+            "Generative AI", "Natural Language Processing", "Computer Vision",
+            "OpenCV", "YOLO", "Hugging Face", "Power BI", "Git", "GitHub",
+            "Docker", "AWS", "PostgreSQL", "Scikit-learn", "REST APIs",
+            "Data Structures and Algorithms", "Computer Networks", "DBMS",
+            "FastAPI", "TensorFlow", "PyTorch", "Statistics", "Excel", "Linux"
         ];
 
         const input = document.getElementById("skill-input");
@@ -160,7 +585,7 @@
         const hiddenInput = document.getElementById("skills-value");
         const selectedSkills = new Map();
 
-        function renderSelected() {
+        function renderSelectedSkills() {
             selectedContainer.replaceChildren();
 
             for (const [key, skill] of selectedSkills) {
@@ -178,17 +603,15 @@
 
                 remove.addEventListener("click", () => {
                     selectedSkills.delete(key);
-                    renderSelected();
-                    renderSuggestions();
+                    renderSelectedSkills();
+                    renderSkillSuggestions();
                 });
 
                 tag.append(label, remove);
                 selectedContainer.appendChild(tag);
             }
 
-            hiddenInput.value = JSON.stringify(
-                [...selectedSkills.values()]
-            );
+            hiddenInput.value = JSON.stringify([...selectedSkills.values()]);
         }
 
         function addSkill(skill) {
@@ -196,55 +619,327 @@
             if (!clean) return;
 
             const key = clean.toLocaleLowerCase();
-            if (selectedSkills.has(key)) return;
 
-            selectedSkills.set(key, clean);
+            if (!selectedSkills.has(key)) {
+                selectedSkills.set(key, clean);
+                renderSelectedSkills();
+            }
+
             input.value = "";
             suggestions.replaceChildren();
-            renderSelected();
+            input.focus();
         }
 
-        function renderSuggestions() {
+        function renderSkillSuggestions() {
             suggestions.replaceChildren();
-            const query = input.value.trim().toLocaleLowerCase();
 
+            const query = input.value.trim().toLocaleLowerCase();
             if (!query) return;
 
-            const matches = skillCatalog.filter(skill =>
-                skill.toLocaleLowerCase().includes(query) &&
-                !selectedSkills.has(skill.toLocaleLowerCase())
-            ).slice(0, 8);
+            const matches = skillCatalog.filter(skill => skill.toLocaleLowerCase().includes(query) && !selectedSkills.has(skill.toLocaleLowerCase()))
+                .sort((a,b)=>(b.toLocaleLowerCase().startsWith(query)-a.toLocaleLowerCase().startsWith(query)) || a.localeCompare(b)).slice(0, 5);
 
             for (const skill of matches) {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "suggestion";
-                button.textContent = skill;
-                button.addEventListener("click", () => addSkill(skill));
+                button.setAttribute("role","option");
+                setHighlightedLabel(button, skill, query);
+
+                button.addEventListener("mousedown", event => {
+                    event.preventDefault();
+                    addSkill(skill);
+                });
+
                 suggestions.appendChild(button);
             }
         }
 
-        input.addEventListener("input", renderSuggestions);
+        input.addEventListener("input", renderSkillSuggestions);
 
         input.addEventListener("keydown", event => {
             if (event.key === "Enter") {
                 event.preventDefault();
+
                 const first = suggestions.querySelector("button");
-                addSkill(first ? first.textContent : input.value);
+
+                if (first) {
+                    addSkill(first.textContent);
+                } else if (input.value.trim()) {
+                    addSkill(input.value);
+                }
+            } else if (event.key === "Escape") {
+                suggestions.replaceChildren();
             }
         });
 
-        document.getElementById("add-custom").addEventListener(
-            "click", () => addSkill(input.value)
-        );
+        document.getElementById("add-custom").addEventListener("click", () => {
+            addSkill(input.value);
+        });
+
+
+        // =====================================
+        // 2. CAREER INTERESTS - MULTIPLE TAGS
+        // =====================================
+
+        const interestInput = document.getElementById("interests-input");
+        const interestSuggestions = document.getElementById("interest-suggestions");
+        const selectedInterestsContainer = document.getElementById("selected-interests");
+        const interestsValue = document.getElementById("interests-value");
+
+        const interestCatalog = [
+            "Python Development", "Web Development", "Frontend Development",
+            "Backend Development", "Full Stack Development", "Data Analysis",
+            "Data Science", "Machine Learning", "Artificial Intelligence",
+            "Natural Language Processing", "Computer Vision", "Cloud Computing",
+            "Cybersecurity", "Software Engineering", "Mobile App Development",
+            "Database Management", "DevOps", "Data Engineering",
+            "UI/UX Design", "Software Testing", "Business Analysis"
+        ];
+
+        const selectedInterests = new Map();
+
+        function renderInterests() {
+            selectedInterestsContainer.replaceChildren();
+
+            for (const [key, interest] of selectedInterests) {
+                const tag = document.createElement("span");
+                tag.className = "selected-tag";
+
+                const label = document.createElement("span");
+                label.textContent = interest;
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove-tag";
+                remove.textContent = "×";
+                remove.setAttribute("aria-label", "Remove " + interest);
+
+                remove.addEventListener("click", () => {
+                    selectedInterests.delete(key);
+                    renderInterests();
+                    showInterestSuggestions();
+                });
+
+                tag.append(label, remove);
+                selectedInterestsContainer.appendChild(tag);
+            }
+
+            interestsValue.value = [...selectedInterests.values()].join(", ");
+        }
+
+        function addInterest(interest) {
+            const clean = interest.trim();
+            if (!clean) return;
+
+            const key = clean.toLocaleLowerCase();
+
+            if (!selectedInterests.has(key)) {
+                selectedInterests.set(key, clean);
+                renderInterests();
+            }
+
+            interestInput.value = "";
+            interestSuggestions.replaceChildren();
+            interestInput.focus();
+        }
+
+        function showInterestSuggestions() {
+            interestSuggestions.replaceChildren();
+
+            const query = interestInput.value.trim().toLocaleLowerCase();
+            if (!query) return;
+
+            const matches = interestCatalog.filter(item => item.toLocaleLowerCase().includes(query) && !selectedInterests.has(item.toLocaleLowerCase()))
+                .sort((a,b)=>(Number(b.toLocaleLowerCase().startsWith(query))-Number(a.toLocaleLowerCase().startsWith(query))) || a.localeCompare(b)).slice(0, 5);
+
+            for (const item of matches) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "suggestion";
+                button.setAttribute("role","option");
+                setHighlightedLabel(button, item, query);
+
+                button.addEventListener("mousedown", event => {
+                    event.preventDefault();
+                    addInterest(item);
+                });
+
+                interestSuggestions.appendChild(button);
+            }
+        }
+
+        interestInput.addEventListener("input", showInterestSuggestions);
+
+        interestInput.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+
+                const first = interestSuggestions.querySelector("button");
+
+                if (first) {
+                    addInterest(first.textContent);
+                } else if (interestInput.value.trim()) {
+                    addInterest(interestInput.value);
+                }
+            } else if (event.key === "Escape") {
+                interestSuggestions.replaceChildren();
+            }
+        });
+
+        interestInput.addEventListener("blur", () => {
+            interestSuggestions.replaceChildren();
+        });
+
+
+        // =====================================
+        // 3. TARGET CAREER - ONE TAG
+        // =====================================
+
+        const careerInput = document.getElementById("target-career-input");
+        const careerSuggestions = document.getElementById("career-suggestions");
+        const selectedCareerContainer = document.getElementById("selected-career");
+        const targetCareerValue = document.getElementById("target-career-value");
+
+        const careerCatalog = [
+            "Python Developer", "Software Developer", "Software Engineer",
+            "Web Developer", "Frontend Developer", "Backend Developer",
+            "Full Stack Developer", "Data Analyst", "Data Scientist",
+            "Machine Learning Engineer", "AI Engineer",
+            "Artificial Intelligence Specialist", "NLP Engineer",
+            "Computer Vision Engineer", "Data Engineer",
+            "Database Administrator", "Cloud Engineer", "DevOps Engineer",
+            "Cybersecurity Analyst", "Network Engineer", "Java Developer",
+            "Mobile App Developer", "Android Developer", "UI/UX Designer",
+            "QA Engineer", "Software Tester", "Business Analyst",
+            "Power BI Developer", "Research Engineer"
+        ];
+
+        let selectedCareer = "";
+
+        function renderCareer() {
+            selectedCareerContainer.replaceChildren();
+
+            if (selectedCareer) {
+                const tag = document.createElement("span");
+                tag.className = "selected-tag";
+
+                const label = document.createElement("span");
+                label.textContent = selectedCareer;
+
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove-tag";
+                remove.textContent = "×";
+                remove.setAttribute("aria-label", "Remove " + selectedCareer);
+
+                remove.addEventListener("click", () => {
+                    selectedCareer = "";
+                    targetCareerValue.value = "";
+                    renderCareer();
+                    careerInput.focus();
+                });
+
+                tag.append(label, remove);
+                selectedCareerContainer.appendChild(tag);
+            }
+
+            targetCareerValue.value = selectedCareer;
+        }
+
+        function addCareer(career) {
+            const clean = career.trim();
+            if (!clean) return;
+
+            selectedCareer = clean;
+            renderCareer();
+
+            careerInput.value = "";
+            careerSuggestions.replaceChildren();
+            careerInput.focus();
+        }
+
+        function showCareerSuggestions() {
+            careerSuggestions.replaceChildren();
+
+            const query = careerInput.value.trim().toLocaleLowerCase();
+            if (!query) return;
+
+            const matches = careerCatalog.filter(item => item.toLocaleLowerCase().includes(query) && item.toLocaleLowerCase() !== selectedCareer.toLocaleLowerCase())
+                .sort((a,b)=>(Number(b.toLocaleLowerCase().startsWith(query))-Number(a.toLocaleLowerCase().startsWith(query))) || a.localeCompare(b)).slice(0, 5);
+
+            for (const item of matches) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "suggestion";
+                button.setAttribute("role","option");
+                setHighlightedLabel(button, item, query);
+
+                button.addEventListener("mousedown", event => {
+                    event.preventDefault();
+                    addCareer(item);
+                });
+
+                careerSuggestions.appendChild(button);
+            }
+        }
+
+        careerInput.addEventListener("input", showCareerSuggestions);
+
+        careerInput.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+
+                const first = careerSuggestions.querySelector("button");
+
+                if (first) {
+                    addCareer(first.textContent);
+                } else if (careerInput.value.trim()) {
+                    addCareer(careerInput.value);
+                }
+            } else if (event.key === "Escape") {
+                careerSuggestions.replaceChildren();
+            }
+        });
+
+        careerInput.addEventListener("blur", () => {
+            careerSuggestions.replaceChildren();
+        });
+
+
+        // =====================================
+        // 4. FORM VALIDATION
+        // =====================================
+
+        // Accessible keyboard navigation shared by the autocomplete dropdowns.
+        function enableAutocompleteKeys(field, list) {
+            let active = -1;
+            field.setAttribute("aria-autocomplete", "list");
+            field.addEventListener("keydown", event => {
+                const options = [...list.querySelectorAll("button.suggestion")];
+                if (!options.length) return;
+                if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                    event.preventDefault(); event.stopImmediatePropagation();
+                    active = (active + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+                    options.forEach((o,i)=>{o.setAttribute("aria-selected",String(i===active));o.classList.toggle("active",i===active);});
+                    options[active].scrollIntoView({block:"nearest"});
+                } else if (event.key === "Enter" && active >= 0) {
+                    event.preventDefault(); event.stopImmediatePropagation(); options[active].dispatchEvent(new MouseEvent("mousedown",{bubbles:true,cancelable:true})); active=-1;
+                } else if (event.key === "Escape") { list.replaceChildren(); active=-1; }
+            }, true);
+        }
+        enableAutocompleteKeys(input, suggestions);
+        enableAutocompleteKeys(interestInput, interestSuggestions);
+        enableAutocompleteKeys(careerInput, careerSuggestions);
 
         document.querySelector("form").addEventListener("submit", event => {
-            if (selectedSkills.size === 0) {
+            const hasResume = document.getElementById("resume").files.length > 0;
+
+            if (selectedSkills.size === 0 && !hasResume) {
                 event.preventDefault();
-                alert("Please select or add at least one skill.");
+                alert("Please upload a resume or select/add at least one skill.");
             }
         });
     </script>
-</body>
+<script src="{% static 'careers/autocomplete.js' %}"></script></body>
 </html>
