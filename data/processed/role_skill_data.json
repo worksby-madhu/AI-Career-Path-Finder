@@ -141244,5 +141244,295 @@
       "operate soldering equipment",
       "install low voltage wiring"
     ]
+  },
+  "Python Developer": {
+    "description": "Python Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "sql",
+      "object-oriented programming",
+      "git",
+      "django",
+      "flask",
+      "rest api",
+      "testing"
+    ]
+  },
+  "Java Developer": {
+    "description": "Java Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "java",
+      "object-oriented programming",
+      "sql",
+      "git",
+      "spring boot",
+      "rest api",
+      "maven",
+      "testing"
+    ]
+  },
+  "Full Stack Developer": {
+    "description": "Full Stack Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "html",
+      "css",
+      "javascript",
+      "react",
+      "python",
+      "django",
+      "node.js",
+      "sql",
+      "git",
+      "rest api"
+    ]
+  },
+  "Frontend Developer": {
+    "description": "Frontend Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "html",
+      "css",
+      "javascript",
+      "react",
+      "typescript",
+      "responsive design",
+      "git",
+      "accessibility"
+    ]
+  },
+  "Backend Developer": {
+    "description": "Backend Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "java",
+      "sql",
+      "rest api",
+      "django",
+      "node.js",
+      "git",
+      "authentication",
+      "testing"
+    ]
+  },
+  "Software Engineer": {
+    "description": "Software Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "java",
+      "data structures",
+      "algorithms",
+      "object-oriented programming",
+      "git",
+      "sql",
+      "testing"
+    ]
+  },
+  "Data Scientist": {
+    "description": "Data Scientist develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "sql",
+      "statistics",
+      "machine learning",
+      "numpy",
+      "pandas",
+      "data visualization",
+      "scikit-learn"
+    ]
+  },
+  "Machine Learning Engineer": {
+    "description": "Machine Learning Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "machine learning",
+      "numpy",
+      "pandas",
+      "scikit-learn",
+      "tensorflow",
+      "model deployment",
+      "git"
+    ]
+  },
+  "AI Engineer": {
+    "description": "AI Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "machine learning",
+      "deep learning",
+      "natural language processing",
+      "tensorflow",
+      "pytorch",
+      "rest api",
+      "model deployment"
+    ]
+  },
+  "QA Engineer": {
+    "description": "QA Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "software testing",
+      "manual testing",
+      "python",
+      "selenium",
+      "sql",
+      "git",
+      "test cases",
+      "bug tracking"
+    ]
+  },
+  "Automation Test Engineer": {
+    "description": "Automation Test Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "software testing",
+      "python",
+      "selenium",
+      "api testing",
+      "pytest",
+      "sql",
+      "git",
+      "continuous integration"
+    ]
+  },
+  "DevOps Engineer": {
+    "description": "DevOps Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "linux",
+      "git",
+      "docker",
+      "kubernetes",
+      "ci/cd",
+      "cloud computing",
+      "python",
+      "monitoring"
+    ]
+  },
+  "Cybersecurity Analyst": {
+    "description": "Cybersecurity Analyst develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "network security",
+      "linux",
+      "cybersecurity",
+      "siem",
+      "vulnerability assessment",
+      "incident response",
+      "python"
+    ]
+  },
+  "UI/UX Designer": {
+    "description": "UI/UX Designer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "ui design",
+      "ux design",
+      "figma",
+      "wireframing",
+      "prototyping",
+      "user research",
+      "usability testing"
+    ]
+  },
+  "Android Developer": {
+    "description": "Android Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "kotlin",
+      "java",
+      "android sdk",
+      "android studio",
+      "rest api",
+      "git",
+      "sqlite"
+    ]
+  },
+  "Cloud Engineer": {
+    "description": "Cloud Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "cloud computing",
+      "linux",
+      "networking",
+      "aws",
+      "docker",
+      "python",
+      "iam",
+      "monitoring"
+    ]
+  },
+  "Database Administrator": {
+    "description": "Database Administrator develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "sql",
+      "mysql",
+      "database management",
+      "backup and recovery",
+      "performance tuning",
+      "linux"
+    ]
+  },
+  "Business Analyst": {
+    "description": "Business Analyst develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "requirements analysis",
+      "sql",
+      "excel",
+      "business process modeling",
+      "user stories",
+      "data analysis",
+      "communication"
+    ]
+  },
+  "Power BI Developer": {
+    "description": "Power BI Developer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "power bi",
+      "dax",
+      "power query",
+      "sql",
+      "data modeling",
+      "excel",
+      "data visualization"
+    ]
+  },
+  "Prompt Engineer": {
+    "description": "Prompt Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "prompt engineering",
+      "natural language processing",
+      "python",
+      "llm evaluation",
+      "api integration",
+      "critical thinking"
+    ]
+  },
+  "Product Manager": {
+    "description": "Product Manager develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "product management",
+      "user research",
+      "roadmapping",
+      "requirements analysis",
+      "agile",
+      "data analysis",
+      "communication"
+    ]
+  },
+  "Computer Vision Engineer": {
+    "description": "Computer Vision Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "computer vision",
+      "opencv",
+      "deep learning",
+      "pytorch",
+      "numpy",
+      "image processing"
+    ]
+  },
+  "NLP Engineer": {
+    "description": "NLP Engineer develops, supports, or applies technology and professional practices relevant to this career.",
+    "skills": [
+      "python",
+      "natural language processing",
+      "machine learning",
+      "transformers",
+      "pytorch",
+      "text processing",
+      "sql"
+    ]
   }
 }
