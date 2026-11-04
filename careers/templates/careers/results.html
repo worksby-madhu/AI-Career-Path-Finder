@@ -1,0 +1,725 @@
+
+{% load static %}
+<!DOCTYPE html>
+{% load roadmap_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Career Matches | AI Career Path Finder</title>
+    <link rel="stylesheet" href="{% static 'careers/app.css' %}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #243047;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #172554;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1e3a8a;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin: 24px 0;
+            padding: 24px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 14px rgba(15, 23, 42, 0.06);
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .profile-item {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-item strong {
+            display: block;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .skill {
+            padding: 5px 10px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .career-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 16px;
+        }
+
+        .career-card h3 {
+            margin: 0 0 8px;
+            color: #172554;
+            text-transform: capitalize;
+        }
+
+        .percentage {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: bold;
+            margin: 4px 0 12px;
+        }
+
+        .muted {
+            color: #64748b;
+        }
+
+        .empty {
+            padding: 14px;
+            border-radius: 8px;
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 10px 0 25px;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 10px;
+            }
+
+            .section {
+                padding: 16px;
+            }
+        }
+    </style>
+
+    <style>
+      :root{--ink:#17233b;--muted:#66748b;--line:#e4eaf3;--blue:#3157d5}
+      body{background:radial-gradient(ellipse at 0 0,#e9efff 0,transparent 38%),#f5f7fb;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+      .container{max-width:1120px}
+      h1{font-size:clamp(2rem,4vw,3rem);letter-spacing:-.04em;color:#17233b}
+      h2{color:#20345a;letter-spacing:-.02em}
+      .section{border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 35px rgba(24,42,82,.05);padding:clamp(18px,3vw,30px)}
+      .career-card{border:1px solid var(--line);border-radius:14px;padding:22px;background:linear-gradient(180deg,#fff,#fcfdff)}
+      .career-card h3{letter-spacing:-.02em}
+      .percentage{background:#e8efff;color:#2546a7;border-radius:20px}
+      .skill{background:#e8efff;color:#2546a7;border:1px solid #d6e2ff}
+      .profile-item{border:1px solid #edf1f7;background:#fbfcff}
+      .back-link{color:var(--blue)}
+      a:focus,button:focus{outline:3px solid #b9caff;outline-offset:2px}
+      @media(max-width:600px){body{padding:18px 12px}.career-card{padding:16px}}
+    </style>
+
+
+    <style>
+      :root{--ink:#172b27;--muted:#64736d;--line:#dce5df;--accent:#176b52;--accent-dark:#10533f;--surface:#ffffff;--page:#eef3f0;--copper:#bd6847;--gold:#b18a43}
+      html{scroll-behavior:smooth;scroll-padding-top:105px}
+      body{background:var(--page)!important;color:var(--ink)!important;font-family:Inter,"Segoe UI",Arial,sans-serif!important;padding:24px 28px!important}
+      .container{max-width:1360px!important;width:min(100%,1360px)!important;margin:0 auto}
+      .results-nav{position:relative;display:flex;gap:18px;align-items:center;justify-content:space-between;margin:0 0 18px!important;padding:12px 0;border-bottom:1px solid var(--line)}
+      .brand{color:var(--ink)!important}.brand-mark{background:var(--accent)!important;border-radius:8px!important}
+      .back-link{color:var(--accent)!important;margin:0 8px!important}
+      .section-jump{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;margin:0 0 24px;background:#f7faf8;border:1px solid var(--line);border-radius:12px;box-shadow:0 5px 18px #172b270b}
+      .section-jump a{padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:700;font-size:.9rem;background:#e7f1ec}
+      .section-jump a:hover{background:var(--accent);color:#fff}
+      .results-hero{align-items:center;gap:40px;padding:18px 0 28px}.results-hero h1{color:var(--ink)!important}.results-hero h1 em{color:var(--copper)!important}
+      .section{background:#fff!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:0 8px 24px #17372a0a!important;margin:20px 0!important;padding:26px!important}
+      h1,h2,h3{color:var(--ink)!important}.career-card{background:#fbfdfc!important;border-color:var(--line)!important}
+      .skill,.percentage{background:#e5f2ec!important;color:#14563f!important;border-color:#c8e1d5!important}
+      .profile-item{background:#f5f9f6!important;border-color:var(--line)!important}
+      .roadmap-progress{background:#f2f7f4!important;border-color:var(--line)!important}
+      .progress-fill{background:var(--accent)!important}.learning-coach{background:#f9eee8!important;color:#814a32!important}
+      .task-list{list-style:none!important;padding:0!important;margin:12px 0!important;width:100%!important}
+      .task-list li{display:block!important;width:100%!important;min-width:0!important;padding:10px 12px!important;border-bottom:1px solid #edf1ee!important}
+      .task-list label,.roadmap-task-label{display:flex!important;align-items:flex-start!important;gap:10px!important;width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.55!important}
+      .task-list label input,.roadmap-task-label input{width:17px!important;height:17px!important;flex:0 0 17px!important;margin:3px 0 0!important;accent-color:var(--accent)!important}
+      .task-list label>*:not(input){min-width:0!important;flex:1 1 auto!important}
+      .stage,.roadmap-mini{width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+      .stage summary{cursor:pointer;color:var(--accent)!important}
+      .section:after{content:"";display:block;clear:both}
+      @media(min-width:1200px){.profile-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.career-card{padding:24px}.section{padding:28px!important}}
+      @media(max-width:900px){body{padding:16px!important}.section-jump{position:static}.results-hero{display:block}.insight-pill{margin-top:12px}}
+    </style>
+
+
+    <style>
+      :root{--ink:#18352d;--muted:#69766f;--accent:#176b55;--line:#d8e3d9;--surface:#fffdf8;--page:#f7f4ec;--terracotta:#c47755;--gold:#c6a15b}
+      *{box-sizing:border-box} body{margin:0!important;padding:24px clamp(18px,3vw,44px)!important;background:var(--page)!important;color:var(--ink)!important;font:15px/1.55 Inter,"Segoe UI",Arial,sans-serif!important}
+      .container{width:min(100%,1500px)!important;max-width:1500px!important;margin-inline:auto!important}
+      .section{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;padding:clamp(20px,2vw,30px)!important;margin:18px 0!important}
+      .section-jump{background:#fffdf8!important;border-color:var(--line)!important;top:8px!important;box-shadow:0 5px 18px #18352d10!important}
+      .section-jump a{background:#edf2e9!important;color:var(--accent)!important}.section-jump a:hover{background:var(--accent)!important;color:#fff!important}
+      .career-card{background:#fffdf8!important;border-color:var(--line)!important;padding:20px!important}
+      .career-card summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;list-style:none}.career-card summary::-webkit-details-marker{display:none}
+      .role-title{font-weight:750;color:var(--ink)}.role-open{font-size:.85rem;color:var(--accent);font-weight:700;white-space:nowrap}
+      .role-details>summary{padding:2px 0}.role-details[open]>summary{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:12px}
+      .percentage,.skill{background:#edf2e9!important;color:#315747!important;border-color:#d6e2d5!important}.progress-fill{background:var(--terracotta)!important}
+      .brand-mark{display:grid;place-items:center;width:34px;height:34px;background:var(--accent)!important;color:white!important;font-size:22px!important}
+      .results-hero h1{font-size:clamp(2rem,3.5vw,3.2rem)!important}.insight-pill{background:#fffdf8!important;border-color:var(--line)!important}
+      .target-stage summary{color:var(--accent)}.target-stage[open] summary{margin-bottom:14px}
+      .section-controls .btn{background:#fffdf8!important;color:var(--accent)!important;border-color:var(--line)!important}.section-controls .btn.primary{background:var(--accent)!important;color:#fff!important}
+      @media(min-width:1100px){.profile-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media(max-width:850px){body{padding:16px!important}.results-nav{align-items:flex-start;flex-wrap:wrap}.results-hero{display:block}.section-jump{overflow-x:auto;flex-wrap:nowrap}.section-jump a{white-space:nowrap}}
+    </style>
+
+<style>
+html,body{min-height:100%;background:#4a3326!important}
+body{background:linear-gradient(135deg,#624633 0%,#4b3427 55%,#3c291f 100%)!important;color:#f5e6cc!important}
+.container{width:min(100%,1360px)!important;margin:0 auto!important}
+.results-nav,.section-jump{background:#f4e7d4!important;color:#493326!important;border-color:#c6a98a!important}
+.results-nav .brand,.results-nav .brand-sub{color:#493326!important}
+.results-nav a,.section-jump a{color:#9a4e20!important}
+.section{background:#f4e7d4!important;color:#493326!important;border-color:#d2b89b!important}
+.section h1,.section h2,.section h3,.section strong,.section p,.section li,.section small{color:#493326!important}
+.results-hero{background:linear-gradient(120deg,#493326,#624633)!important;color:#f8ead7!important}
+.results-hero h1{color:#f8ead7!important;font-weight:650!important}
+.results-hero h1 em{color:#d8794c!important}
+.results-hero .subtitle{color:#e2d2c0!important}
+.results-hero .insight-pill{background:#f4e7d4!important;color:#493326!important}
+.results-hero .insight-pill *{color:#493326!important}
+.saved-analysis-strip{color:#493326!important}
+.saved-analysis-strip strong{color:#493326!important}
+.section a{color:#a65322!important}
+.profile-item,.career-card{background:#fff8ef!important;color:#493326!important;border-color:#d2b89b!important}
+.profile-item strong,.career-card h3,.career-card p,.career-card li{color:#493326!important}
+.skill,.percentage{background:#ead2b2!important;color:#493326!important;border-color:#c96b2c!important}
+</style></head>
+
+<body>
+<div class="container">
+        {% if saved_analysis %}<div class="section saved-analysis-strip"><strong>Saved analysis: {{ saved_profile.name }}</strong> · <a href="{% url 'export_analysis_pdf' saved_analysis.pk %}">Download PDF report</a> · <a href="{% url 'profile_history' saved_profile.pk %}">View history</a></div>{% endif %}
+
+    <nav class="results-nav"><a class="brand" href="{% url 'home' %}"><span class="brand-mark" aria-hidden="true">P</span> <span>PathFinder</span> <small class="brand-sub">AI</small></a><div><a class="back-link" href="{% url 'home' %}">＋ New analysis</a> {% if request.user.is_authenticated %}<a class="back-link" href="{% url 'dashboard' %}">Dashboard</a>{% else %}<a class="back-link" href="{% url 'login' %}">Log in to save</a>{% endif %}</div></nav>
+    <nav class="section-jump" aria-label="Analysis sections">
+      <a href="#profile-section">Profile</a><a href="#resume-careers">Top 10 Careers</a>{% if interests %}<a href="#interest-careers">Interests</a>{% endif %}{% if target_career %}<a href="#target-analysis">Target Career</a>{% endif %}<a href="#learning-roadmap">Roadmap</a>
+    </nav>
+    <header class="results-hero"><div><span class="eyebrow">YOUR CAREER INSIGHTS</span><h1>Your next chapter<br><em>starts here.</em></h1><p class="subtitle">Explore career matches, understand your skill coverage, and turn your goals into a personalized learning journey.</p></div><div class="insight-pill"><span aria-hidden="true">✦</span><div><strong>{{ resume_recommendations|length }} career paths</strong><small>matched to your profile</small></div></div></header>
+
+    <!-- YOUR PROFILE -->
+    <section class="section" id="profile-section">
+        <h2>Your Profile</h2>
+
+        <div class="profile-grid">
+            <div class="profile-item">
+                <strong>Resume processed</strong>
+                {% if resume_filename %}
+                    {{ resume_filename }}
+                {% else %}
+                    No resume uploaded
+                {% endif %}
+            </div>
+
+            <div class="profile-item">
+                <strong>Name</strong>
+                {{ name|default:"Not provided" }}
+            </div>
+            <div class="profile-item">
+                <strong>Input method</strong>
+                {{ input_source|default:"Manual skills" }}
+            </div>
+
+            <div class="profile-item">
+                <strong>Education</strong>
+                {{ education|default:"Not provided" }}
+            </div>
+
+            <div class="profile-item">
+                <strong>Experience</strong>
+                {{ experience|default:"0" }} year(s)
+            </div>
+        </div>
+
+        {% if projects %}<h3>Projects</h3><p>{{ projects|linebreaksbr }}</p>{% endif %}
+        {% if certifications %}<h3>Certifications</h3><p>{{ certifications|linebreaksbr }}</p>{% endif %}
+        {% if interests %}<h3>Your interests</h3>
+            <div class="skills">
+                {% for interest in interests %}
+                    <span class="skill">{{ interest }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h3>Skills identified ({{ user_skills|length }})</h3>
+        {% if user_skills %}
+            <div class="skills">
+                {% for skill in user_skills %}
+                    <span class="skill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">No skills identified.</p>
+        {% endif %}
+    </section>
+
+    <!-- SECTION 1: RESUME-BASED CAREERS -->
+    <section class="section" id="resume-careers">
+        <h2>1. Top 10 Careers Based on Your Resume</h2>
+        <p class="muted">
+            These careers are ranked by how well your identified skills match
+            the required skills for each role.
+        </p>
+
+        {% if resume_recommendations %}
+            {% for item in resume_recommendations %}
+                <details class="career-card role-details">
+                    <summary><span class="role-title">{{ forloop.counter }}. {{ item.role|default:"Career role" }}</span><span class="role-open">View details ＋</span></summary>
+
+                    <div class="percentage">
+                        {{ item.skill_match_percentage|default:0 }}% skill coverage
+                    </div>
+                    <p class="match-reason"><strong>Why this match:</strong> {{ item.matched_skill_count|default:0 }} of {{ item.required_skill_count|default:0 }} required skills match your profile. Coverage is a skills comparison, not a hiring prediction.</p>
+
+                    {% if item.description %}
+                        <p>{{ item.description }}</p>
+                    {% endif %}
+
+                    {% if item.matched_skills %}
+                        <strong>Matched skills:</strong>
+                        <div class="skills">
+                            {% for skill in item.matched_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if item.missing_skills %}
+                        <p><strong>Skills to learn:</strong></p>
+                        <div class="skills">
+                            {% for skill in item.missing_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </details>
+                <details class="roadmap-mini">
+                    <summary>Explore personalized roadmap</summary>
+                    <div class="roadmap-progress" data-progress-career="{{ item.role|escape }}"><div class="progress-top"><strong>Learning progress</strong><span class="progress-count">0 / 0 tasks</span></div><div class="progress-track"><span class="progress-fill"></span></div><p class="next-task">Your next step will appear here.</p><div class="learning-coach" aria-live="polite">A steady path starts with one small step. Mark topics you already know, then focus on the next gap.</div></div>
+                    {% for stage in item.roadmap.stages %}
+                      <details class="stage">
+                        <summary>Stage {{ stage.number }} · {{ stage.title }} <span>{{ stage.duration }}</span></summary>
+                        <ul class="task-list">
+                        {% for task in stage.tasks %}
+                          <li><label><input type="checkbox" class="roadmap-task" data-career="{{ item.role|escape }}" data-task="{{ stage.task_ids|lookup:forloop.counter0 }}"> {{ task }}</label></li>
+                        {% endfor %}
+                        </ul>
+                        {% if stage.project %}<p><strong>Project:</strong> {{ stage.project }}</p>{% endif %}
+                        <p class="muted">{{ stage.milestone }}</p>
+                      </details>
+                    {% endfor %}
+                </details>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                No resume-based career matches were returned. We will check
+                the role-matching logic if this message remains after updating
+                the template.
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- SECTION 2: INTEREST-BASED CAREERS -->
+    {% if interests %}<section class="section" id="interest-careers">
+        <h2>2. Careers Based on Your Interests</h2>
+        <p class="muted">
+            {% if interest_fallback %}No exact interest matches were found, so these alternatives are based on your current skills and profile.{% else %}These careers are selected from your interests. You can explore a role even if your current profile does not contain its required skills.{% endif %}
+        </p>
+
+        {% if interest_recommendations %}
+            {% for item in interest_recommendations %}
+                <details class="career-card role-details">
+                    <summary><span class="role-title">{{ forloop.counter }}. {{ item.role|default:"Career role" }}</span><span class="role-open">View details ＋</span></summary>
+
+                    <div class="percentage">
+                        {{ item.skill_match_percentage|default:0 }}% skill coverage
+                    </div>
+                    <p class="match-reason"><strong>Why this match:</strong> {{ item.matched_skill_count|default:0 }} of {{ item.required_skill_count|default:0 }} required skills match your profile. Coverage is a skills comparison, not a hiring prediction.</p>
+
+                    {% if item.description %}
+                        <p>{{ item.description }}</p>
+                    {% endif %}
+
+                    {% if item.matched_skills %}
+                        <strong>Skills you already have:</strong>
+                        <div class="skills">
+                            {% for skill in item.matched_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if item.missing_skills %}
+                        <p><strong>Skills to learn:</strong></p>
+                        <div class="skills">
+                            {% for skill in item.missing_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </details>
+                <details class="roadmap-mini">
+                    <summary>Explore personalized roadmap</summary>
+                    <div class="roadmap-progress" data-progress-career="{{ item.role|escape }}"><div class="progress-top"><strong>Learning progress</strong><span class="progress-count">0 / 0 tasks</span></div><div class="progress-track"><span class="progress-fill"></span></div><p class="next-task">Your next step will appear here.</p><div class="learning-coach" aria-live="polite">A steady path starts with one small step. Mark topics you already know, then focus on the next gap.</div></div>
+                    {% for stage in item.roadmap.stages %}
+                      <details class="stage">
+                        <summary>Stage {{ stage.number }} · {{ stage.title }} <span>{{ stage.duration }}</span></summary>
+                        <ul class="task-list">
+                        {% for task in stage.tasks %}
+                          <li><label><input type="checkbox" class="roadmap-task" data-career="{{ item.role|escape }}" data-task="{{ stage.task_ids|lookup:forloop.counter0 }}"> {{ task }}</label></li>
+                        {% endfor %}
+                        </ul>
+                        {% if stage.project %}<p><strong>Project:</strong> {{ stage.project }}</p>{% endif %}
+                        <p class="muted">{{ stage.milestone }}</p>
+                      </details>
+                    {% endfor %}
+                </details>
+            {% endfor %}
+        {% else %}
+        {% endif %}
+    </section>{% endif %}
+
+    <!-- SECTION 3: TARGET CAREER -->
+    {% if target_career %}<section class="section" id="target-analysis">
+        <h2>3. Target Career Analysis</h2>
+
+        {% if target_career %}
+            <p>
+                <strong>Your target:</strong> {{ target_career }}
+            </p>
+
+            {% if target_analysis %}
+                <div class="career-card">
+                    <h3>
+                        {{ target_analysis.role|default:target_career }}
+                    </h3>
+
+                    <div class="percentage">
+                        {{ target_analysis.skill_match_percentage|default:0 }}% skill coverage
+                    </div>
+                    {% if target_analysis.description %}<p>{{ target_analysis.description }}</p>{% endif %}
+                    <p class="muted">Coverage compares your identified skills with the role’s required skills. It is not a hiring probability.</p>
+                    {% if target_analysis.matched_skills %}
+                        <p><strong>Skills you already have:</strong></p>
+                        <div class="skills">
+                            {% for skill in target_analysis.matched_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if target_analysis.missing_skills %}
+                        <p><strong>Required skills to learn:</strong></p>
+                        <div class="skills">
+                            {% for skill in target_analysis.missing_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if target_analysis.optional_skills %}
+                        <p><strong>Additional useful skills:</strong></p>
+                        <div class="skills">
+                            {% for skill in target_analysis.optional_skills %}
+                                <span class="skill">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p class="empty">
+                    We couldn't analyze this target career. Check the career title
+                    and whether it exists in your role dataset.
+                </p>
+            {% endif %}
+
+            {% if target_options %}
+                <h3>Related career titles</h3>
+                <ul>
+                    {% for option in target_options %}
+                        <li>{{ option.role }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% else %}
+            <p class="muted">
+                No target career selected. Choose one on the previous page
+                to see a detailed skill-gap analysis.
+            </p>
+        {% endif %}
+    </section>{% endif %}
+    
+    <!-- SECTION 4: PERSONALIZED LEARNING ROADMAP -->
+    <section class="section" id="learning-roadmap">
+        <h2>4. Your Personalized Learning Roadmap</h2>
+
+        <p class="muted">
+            Follow these stages to develop the skills and practical experience
+            needed for your target career.
+        </p>
+
+        <h3>Target career: {{ roadmap.role }}</h3>
+        <div class="roadmap-progress" data-progress-career="{{ roadmap.role|escape }}"><div class="progress-top"><strong>Learning progress</strong><span class="progress-count">0 / 0 tasks</span></div><div class="progress-track"><span class="progress-fill"></span></div><p class="next-task">Your next step will appear here.</p><div class="learning-coach" aria-live="polite">A steady path starts with one small step. Mark topics you already know, then focus on the next gap.</div></div>
+
+        {% if roadmap.skill_match_percentage != None %}
+            <div class="percentage">
+                Current skill coverage: {{ roadmap.skill_match_percentage }}%
+            </div>
+        {% endif %}
+
+        {% if roadmap.matched_skills %}
+            <h3>Skills you already have</h3>
+            <div class="skills">
+                {% for skill in roadmap.matched_skills %}
+                    <span class="skill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if roadmap.missing_skills %}
+            <h3>Skills to focus on</h3>
+            <div class="skills">
+                {% for skill in roadmap.missing_skills %}
+                    <span class="skill">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for stage in roadmap.stages %}
+            <details class="career-card stage target-stage">
+                <summary><strong>Stage {{ stage.number }}: {{ stage.title }}</strong><span>{{ stage.duration }}</span></summary>
+
+                <p>
+                    <strong>Suggested schedule:</strong>
+                    {{ stage.duration }}
+                </p>
+
+                {% if stage.skills %}
+                    <p><strong>Skills covered:</strong></p>
+                    <div class="skills">
+                        {% for skill in stage.skills %}
+                            <span class="skill">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <p><strong>What to do:</strong></p>
+                <ul>
+                    {% for task in stage.tasks %}
+                        <li><label class="roadmap-task-label"><input type="checkbox" class="roadmap-task" data-career="{{ roadmap.role|escape }}" data-task="{{ stage.task_ids|lookup:forloop.counter0 }}"> {{ task }}</label></li>
+                    {% endfor %}
+                </ul>
+
+                {% if stage.project %}
+                    <p><strong>Practical project:</strong></p>
+                    <p>{{ stage.project }}</p>
+                {% endif %}
+
+                <p><strong>Milestone:</strong> {{ stage.milestone }}</p>
+            </details>
+        {% empty %}
+            <p class="empty">
+                No roadmap stages are available for this career yet.
+            </p>
+        {% endfor %}
+
+        <p class="muted">
+            This is a suggested {{ roadmap.estimated_weeks }}-week plan.
+            Adjust the pace to your knowledge and available study time.
+        </p>
+    </section>
+
+    <a class="back-link" href="{% url 'home' %}">
+        &larr; Analyze another profile
+    </a>
+
+</div>
+
+<style>
+:root{--ink:#17233b;--muted:#64748b;--line:#e3e9f3;--accent:#4f46e5;--surface:#fff}
+body{max-width:1180px;background:radial-gradient(ellipse at 8% 0%,#e9edff 0,transparent 38%),#f5f7fc;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,Segoe UI,sans-serif;padding:34px 22px}
+.container{max-width:1120px;margin:auto}h1{font-size:clamp(2rem,4vw,3rem);letter-spacing:-.045em}
+.section{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,30px);margin:24px 0;box-shadow:0 12px 34px #182b5510}
+.career-card{border:1px solid #e1e7f2;border-radius:17px;padding:20px;margin:16px 0;background:linear-gradient(145deg,#fff,#fbfcff);transition:transform .18s,box-shadow .18s}
+.career-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px #243b6812}
+.percentage{display:inline-flex;background:#eef2ff;color:#4338ca;border-radius:999px;padding:7px 12px;font-weight:700}
+.skill{background:#edf2ff;color:#3346a8;border:1px solid #dce5ff;border-radius:999px;padding:6px 10px}
+.roadmap-task-label{display:flex;align-items:flex-start;gap:8px;line-height:1.55}.roadmap-task-label input{accent-color:#596de5;margin-top:5px;flex:0 0 auto}.roadmap-mini{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-weight:700;padding:10px 2px}summary:focus-visible,input:focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+.stage{border:1px solid var(--line);border-radius:13px;padding:8px 14px;margin:10px 0;background:#fafbff}
+.stage summary span{float:right;color:var(--muted);font-size:.86rem;font-weight:500}
+.task-list{list-style:none;padding-left:0}.task-list li{padding:8px 0;border-bottom:1px dashed #e8edf5}
+.task-list input{accent-color:var(--accent);width:17px;height:17px;vertical-align:middle;margin-right:8px}
+.task-list label{display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.task-list input:checked+*{text-decoration:line-through;color:#64748b}
+.back-link{display:inline-block;padding:12px 16px;border-radius:12px;background:#eef2ff;color:#3730a3;text-decoration:none;font-weight:700}
+@media(max-width:650px){body{padding:16px 10px}.section{padding:16px}.career-card{padding:15px}.stage summary span{float:none;display:block}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.results-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:34px}.brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:#17233b;font-weight:850}.brand-mark{display:grid;place-items:center;width:31px;height:31px;border-radius:10px;color:white;background:linear-gradient(135deg,#5268e8,#9276ef)}.brand-sub{font-size:.68rem;color:#65718b;letter-spacing:.1em;text-transform:uppercase}.results-hero{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:12px 0 24px}.results-hero h1{font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1.05;letter-spacing:-.06em;margin:12px 0;color:#111b35}.results-hero h1 em{font-style:normal;color:#6470e5}.results-hero .subtitle{max-width:650px;line-height:1.7}.eyebrow{font-size:.72rem;letter-spacing:.13em;color:#6467d6;font-weight:850}.insight-pill{display:flex;align-items:center;gap:12px;padding:16px 20px;background:#fff;border:1px solid var(--line);border-radius:16px;white-space:nowrap}.insight-pill>span{font-size:1.5rem;color:#7668df}.insight-pill strong,.insight-pill small{display:block}.insight-pill strong{font-size:.9rem}.insight-pill small{font-size:.75rem;color:var(--muted);margin-top:3px}.roadmap-progress{padding:14px 15px;margin:12px 0 18px;background:#f8f9ff;border:1px solid #e7e9fa;border-radius:13px}.progress-top{display:flex;justify-content:space-between;gap:10px;font-size:.82rem}.progress-count{color:#626c88;font-weight:700}.progress-track{height:8px;border-radius:99px;background:#e5e8f5;overflow:hidden;margin:10px 0}.progress-fill{display:block;height:100%;width:0;background:linear-gradient(90deg,#596de5,#9078e9);border-radius:99px;transition:width .25s}.next-task{font-size:.8rem;color:#6c7690;margin:0;line-height:1.5}.learning-coach{margin-top:10px;padding:9px 11px;border-radius:9px;background:#f0efff;color:#5a5f9d;font-size:.78rem;line-height:1.5}.match-reason{font-size:.86rem;color:#65718a;background:#f8f9fd;border-radius:10px;padding:10px 12px}.roadmap-mini summary{color:#4b56bd}.stage{transition:border-color .15s}.stage[open]{border-color:#cdd3f7}.career-card{overflow-wrap:anywhere}.results-nav .back-link{margin:0}.section h2{font-size:1.22rem}@media(max-width:700px){.results-nav{margin-bottom:20px}.results-hero{display:block}.insight-pill{display:inline-flex;margin-top:12px}.results-hero h1{font-size:2.4rem}.progress-top{flex-wrap:wrap}}
+
+/* Warm botanical theme: replaces the previous blue-heavy palette */
+:root{
+ --navy:#263a32; --muted:#69766d; --accent:#386b57; --line:#e4e3d8;
+ --surface:#fffdf8; --warm-bg:#f5f2e9; --terracotta:#b96f52; --gold:#c49a55;
+}
+body, body.app { background:#f5f2e9 !important; color:#263a32 !important; }
+h1,h2,h3,h4,.brand,.results-hero h1,.form-heading h1 { color:#263a32 !important; }
+a { color:#386b57; }
+button,.btn,.submit-btn,.nav-cta,.hero-cta { background:#386b57 !important; border-color:#386b57 !important; color:#fff !important; }
+button:hover,.btn:hover,.submit-btn:hover,.nav-cta:hover,.hero-cta:hover { background:#2b5544 !important; border-color:#2b5544 !important; }
+.btn.secondary,.back-link,.nav a { background:#fffdf8 !important; color:#386b57 !important; border-color:#d8ded4 !important; }
+.section,.panel,.card,.career-card,.profile-item,.results-nav,.roadmap,.roadmap-mini,.learning-coach {
+ background:#fffdf8 !important; border-color:#e4e3d8 !important;
+}
+.profile-item,.skill-tag,.selected-tag,.insight-pill { background:#edf2e9 !important; color:#315747 !important; border-color:#d6e2d5 !important; }
+.progress-fill,.progress span,.progress-track span { background:#b96f52 !important; }
+.progress-track,.progress,.roadmap-progress { background:#e8e4d8 !important; }
+.eyebrow,.brand-sub,.subtitle,.muted,.hint,small { color:#69766d !important; }
+input,textarea,select { background:#fffefa !important; border-color:#d8ded4 !important; color:#263a32 !important; }
+input:focus,textarea:focus,select:focus { outline:3px solid #386b5726 !important; border-color:#386b57 !important; }
+.autocomplete-list,.autocomplete-box { background:#fffefa !important; border-color:#d8ded4 !important; box-shadow:0 14px 34px #263a3218 !important; }
+.suggestion.active,.suggestion[aria-selected="true"] { background:#edf2e9 !important; color:#263a32 !important; }
+.error { background:#fff1ec !important; color:#914b35 !important; border-color:#e8c2b3 !important; }
+.milestone,.next-task { background:#f4ead9 !important; border-color:#e8d7b9 !important; }
+@media(max-width:700px){ .results-nav{overflow-x:auto} }
+</style>
+<div id="completion-celebration" hidden style="position:fixed;inset:0;z-index:9999;background:#18352deF;color:white;display:none;align-items:center;justify-content:center;text-align:center;padding:24px"><div><div style="font-size:4rem">🎉</div><h1 style="color:white">You did it!</h1><p>You completed this roadmap. Keep building toward your next opportunity.</p><button type="button" class="submit-btn" id="close-celebration">Continue</button></div></div>
+<script>
+(function(){
+ const saved=JSON.parse('{{ roadmap_progress_json|escapejs }}');
+ const csrf=(document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)||[])[1]||"";
+ const allTasks=[...document.querySelectorAll(".roadmap-task")];
+ let userChangedTask=false;
+ allTasks.forEach(box=>{
+   const career=box.dataset.career, task=box.dataset.task;
+   box.checked=!!(saved[career]&&saved[career][task]);
+ });
+ function updateRoadmap(career){
+   const visibleTasks=allTasks.filter(x=>x.dataset.career===career);
+   const byId=new Map(); visibleTasks.forEach(x=>{if(!byId.has(x.dataset.task))byId.set(x.dataset.task,x)});
+   const tasks=[...byId.values()];
+   const done=tasks.filter(x=>x.checked).length;
+   const pct=tasks.length?Math.round(done/tasks.length*100):0;
+   if(userChangedTask && pct===100 && !window.__celebratedCareer){window.__celebratedCareer=career;const modal=document.getElementById('completion-celebration');if(modal){modal.hidden=false;modal.style.display='flex';}}
+   document.querySelectorAll(`[data-progress-career="${CSS.escape(career)}"]`).forEach(panel=>{
+     panel.querySelector('.progress-count').textContent=`${done} / ${tasks.length} tasks · ${pct}%`;
+     panel.querySelector('.progress-fill').style.width=pct+'%';
+     const next=tasks.find(x=>!x.checked);
+     panel.querySelector('.next-task').textContent=next?`Next up: ${next.closest('li').textContent.trim()}`:(tasks.length?'All roadmap tasks completed — great work!':'No tasks available yet.');
+     const coach=panel.querySelector('.learning-coach');
+     if(coach){coach.textContent=pct===100?'🎉 You did it! You completed this roadmap’s current tasks. Keep building, one opportunity at a time.':done===0?'Start wherever you are. Mark familiar topics as already known and focus on the next gap.':pct>=50?'You’re building momentum. Keep moving through the remaining tasks at your own pace.':`Nice progress — ${done} task${done===1?'':'s'} completed. Your next step is ready when you are.`;}
+   });
+   document.querySelectorAll('.roadmap-mini').forEach(details=>{
+     const local=[...details.querySelectorAll('.roadmap-task')];
+     if(local.length&&local[0].dataset.career===career){
+       const summary=details.querySelector('summary');
+       summary.textContent=`Explore personalized roadmap · ${local.filter(x=>x.checked).length}/${local.length} completed`;
+     }
+   });
+ }
+ [...new Set(allTasks.map(x=>x.dataset.career))].forEach(updateRoadmap);
+ document.getElementById("close-celebration")?.addEventListener("click",()=>{const m=document.getElementById("completion-celebration");m.hidden=true;m.style.display="none";});
+ allTasks.forEach(box=>box.addEventListener('change',async()=>{
+   userChangedTask=true;
+   const career=box.dataset.career, task=box.dataset.task;
+   allTasks.filter(x=>x.dataset.career===career&&x.dataset.task===task).forEach(x=>x.checked=box.checked);
+   updateRoadmap(career);
+   try{
+     const response=await fetch("{% url 'toggle_task' %}",{method:"POST",headers:{"Content-Type":"application/json","X-CSRFToken":decodeURIComponent(csrf)},body:JSON.stringify({career,task_id:task,completed:box.checked})});
+     if(!response.ok){box.checked=!box.checked;updateRoadmap(career);}
+   }catch(e){box.checked=!box.checked;updateRoadmap(career);}
+ }));
+})();
+</script>
+<script>
+(function(){
+ const sections=[...document.querySelectorAll('#profile-section,#resume-careers,#interest-careers,#target-analysis,#learning-roadmap')];
+ sections.forEach((section,index)=>{
+   const bar=document.createElement('div');bar.className='section-controls';
+   const prev=document.createElement('a');prev.className='btn';prev.textContent=index===0?'Back to analysis start':'← Previous section';prev.href=index===0?'#profile-section':'#'+sections[index-1].id;
+   const next=document.createElement('a');next.className='btn primary';next.textContent=index===sections.length-1?'Back to dashboard':'Next section →';next.href=index===sections.length-1?"{% if request.user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}":'#'+sections[Math.min(index+1,sections.length-1)].id;
+   bar.append(prev,next);section.appendChild(bar);
+ });
+})();
+</script>
+<style>.section-controls{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px;margin-top:22px}.section-controls .btn{margin:0}@media(max-width:600px){.section-controls .btn{flex:1;text-align:center}}</style>
+
+<script src="{% static 'careers/autocomplete.js' %}"></script><style>
+/* Final alignment and rounded header/navigation panels */
+.results-page, body { box-sizing:border-box; }
+body > .container, .container {
+  width: min(100% - 40px, 1180px) !important;
+  max-width:1180px !important;
+  margin-left:auto !important; margin-right:auto !important;
+}
+.saved-analysis-strip, .results-nav, .section-jump {
+  width:100% !important; box-sizing:border-box !important;
+  border-radius:18px !important; overflow:visible;
+}
+.saved-analysis-strip { margin:0 0 18px !important; }
+.results-nav {
+  border:1px solid #d2b89b !important;
+  padding:12px 18px !important; margin:0 0 18px !important;
+  border-bottom:1px solid #d2b89b !important;
+  border-radius:18px !important;
+  background:#f4e7d4 !important;
+}
+.section-jump {
+  border-radius:18px !important; margin:0 0 24px !important;
+}
+.results-hero, .section { width:100%; box-sizing:border-box; }
+.brand { display:inline-flex; align-items:center; gap:10px; }
+.brand-sub { margin-left:0 !important; }
+@media(max-width:700px){
+ body > .container, .container { width:calc(100% - 24px) !important; }
+ .results-nav { align-items:center !important; }
+}
+</style></body>
+</html>
